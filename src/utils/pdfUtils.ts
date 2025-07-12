@@ -57,7 +57,7 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
   pdf.setDrawColor(colors.borderGray.r, colors.borderGray.g, colors.borderGray.b);
   pdf.setLineWidth(0.5);
   pdf.setFillColor(colors.lightGray.r, colors.lightGray.g, colors.lightGray.b);
-  pdf.rect(margin, 110, contentWidth, 90, 'FD');
+  pdf.rect(margin, 80, contentWidth, 90, 'FD');
 
   pdf.setFontSize(10);
   pdf.setTextColor(0, 0, 0);
