@@ -107,6 +107,14 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
       })
     );
 
+    // Spacing row between header and visit details
+    documentChildren.push(
+      new Paragraph({
+        text: '',
+        spacing: { after: 400 } // ~20pt spacing
+      })
+    );
+
     // Info Box: Two-column grid layout
     documentChildren.push(
       new Table({
@@ -125,6 +133,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                 ],
                 shading: { 
                   type: ShadingType.SOLID,
+                  color: colors.lightGray,
                   fill: colors.lightGray 
                 },
                 margins: { top: 100, bottom: 100, left: 200, right: 100 },
@@ -141,6 +150,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                 ],
                 shading: { 
                   type: ShadingType.SOLID,
+                  color: colors.lightGray,
                   fill: colors.lightGray 
                 },
                 margins: { top: 100, bottom: 100, left: 200, right: 100 },
@@ -161,6 +171,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                 ],
                 shading: { 
                   type: ShadingType.SOLID,
+                  color: colors.lightGray,
                   fill: colors.lightGray 
                 },
                 margins: { top: 100, bottom: 100, left: 200, right: 100 },
@@ -177,6 +188,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                 ],
                 shading: { 
                   type: ShadingType.SOLID,
+                  color: colors.lightGray,
                   fill: colors.lightGray 
                 },
                 margins: { top: 100, bottom: 100, left: 200, right: 100 },
@@ -197,6 +209,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                 ],
                 shading: { 
                   type: ShadingType.SOLID,
+                  color: colors.lightGray,
                   fill: colors.lightGray 
                 },
                 margins: { top: 100, bottom: 100, left: 200, right: 100 },
@@ -206,6 +219,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                 children: [new Paragraph({ text: '' })],
                 shading: { 
                   type: ShadingType.SOLID,
+                  color: colors.lightGray,
                   fill: colors.lightGray 
                 },
                 margins: { top: 100, bottom: 100, left: 200, right: 100 },
