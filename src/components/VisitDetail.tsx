@@ -428,8 +428,19 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
 
           {isHeaderCollapsed && (
             <div className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
-              <div className="font-semibold text-blue-800 dark:text-blue-300">
-                <User size={16} className="inline mr-1" />{visit.clientName}   |   <MapPin size={16} className="inline mr-1" />{visit.siteName}   |   <Hash size={16} className="inline mr-1" />{visit.projectNo}
+              <div className="space-y-1">
+                <div className="flex items-center font-semibold text-blue-800 dark:text-blue-300">
+                  <User size={16} className="mr-2 flex-shrink-0" />
+                  <span className="truncate">{visit.clientName}</span>
+                </div>
+                <div className="flex items-center font-semibold text-blue-800 dark:text-blue-300">
+                  <MapPin size={16} className="mr-2 flex-shrink-0" />
+                  <span className="truncate">{visit.siteName}</span>
+                </div>
+                <div className="flex items-center font-semibold text-blue-800 dark:text-blue-300">
+                  <Hash size={16} className="mr-2 flex-shrink-0" />
+                  <span className="truncate">{visit.projectNo}</span>
+                </div>
               </div>
               <div className="text-xs text-gray-500 dark:text-gray-400">
                 {format(new Date(visit.visitDate), 'MMM dd, yyyy')}
