@@ -65,7 +65,20 @@ export const VisitList: React.FC<VisitListProps> = ({ onVisitSelect }) => {
               </div>
               
               <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-300 mb-1 truncate">
-                <User size={16} className="inline mr-1" /> {visit.clientName}   |   <MapPin size={16} className="inline mr-1" /> {visit.siteName}   |   <Hash size={16} className="inline mr-1" /> {visit.projectNo}
+                <div className="space-y-1">
+                  <div className="flex items-center text-base">
+                    <User size={16} className="mr-2 flex-shrink-0" />
+                    <span className="truncate">{visit.clientName}</span>
+                  </div>
+                  <div className="flex items-center text-base">
+                    <MapPin size={16} className="mr-2 flex-shrink-0" />
+                    <span className="truncate">{visit.siteName}</span>
+                  </div>
+                  <div className="flex items-center text-base">
+                    <Hash size={16} className="mr-2 flex-shrink-0" />
+                    <span className="truncate">{visit.projectNo}</span>
+                  </div>
+                </div>
               </h3>
               
               
