@@ -65,33 +65,33 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
 
   // Client
   pdf.setFont('Helvetica', 'bold');
-  pdf.text('Client:', margin + 10, 130);
+  pdf.text('Client:', margin + 10, 100);
   pdf.setFont('Helvetica', 'normal');
-  pdf.text(visit.clientName, margin + 10 + labelWidth, 130);
+  pdf.text(visit.clientName, margin + 10 + labelWidth, 100);
 
   // Site
   pdf.setFont('Helvetica', 'bold');
-  pdf.text('Site:', margin + 10, 150);
+  pdf.text('Site:', margin + 10, 120);
   pdf.setFont('Helvetica', 'normal');
-  pdf.text(visit.siteName, margin + 10 + labelWidth, 150);
+  pdf.text(visit.siteName, margin + 10 + labelWidth, 120);
 
   // Project No.
   pdf.setFont('Helvetica', 'bold');
-  pdf.text('Project No.:', margin + 10, 170);
+  pdf.text('Project No.:', margin + 10, 140);
   pdf.setFont('Helvetica', 'normal');
-  pdf.text(visit.projectNo, margin + 10 + labelWidth, 170);
+  pdf.text(visit.projectNo, margin + 10 + labelWidth, 140);
 
   // Date
   pdf.setFont('Helvetica', 'bold');
-  pdf.text('Date:', margin + 300, 130);
+  pdf.text('Date:', margin + 300, 100);
   pdf.setFont('Helvetica', 'normal');
-  pdf.text(new Date(visit.visitDate).toLocaleDateString(), margin + 300 + labelWidth, 130);
+  pdf.text(new Date(visit.visitDate).toLocaleDateString(), margin + 300 + labelWidth, 100);
 
   // Engineer
   pdf.setFont('Helvetica', 'bold');
-  pdf.text('Prepared by:', margin + 300, 150);
+  pdf.text('Prepared by:', margin + 300, 120);
   pdf.setFont('Helvetica', 'normal');
-  pdf.text(visit.preparedBy, margin + 300 + labelWidth, 150);
+  pdf.text(visit.preparedBy, margin + 300 + labelWidth, 120);
 
   // Calculate yPosition based on actual gray box position
   // Find the gray box rect call above to get the current y position
