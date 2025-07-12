@@ -738,6 +738,42 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
     }
 
     const doc = new Document({
+      numbering: {
+        config: [
+          {
+            reference: 'observations-numbering',
+            levels: [
+              {
+                level: 0,
+                format: LevelFormat.DECIMAL,
+                text: '%1.',
+                alignment: NumberingAlignment.START,
+                style: {
+                  paragraph: {
+                    indent: { left: 200, hanging: 200 }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            reference: 'recommendations-numbering',
+            levels: [
+              {
+                level: 0,
+                format: LevelFormat.LOWER_LETTER,
+                text: '%1.',
+                alignment: NumberingAlignment.START,
+                style: {
+                  paragraph: {
+                    indent: { left: 200, hanging: 200 }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
       sections: [{
         properties: {
           page: {
