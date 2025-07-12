@@ -309,7 +309,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
               new TextRun({ text: cleanLine, size: 22 })
             ],
             spacing: { after: 100 },
-            indent: { left: isTabbed ? 600 : 200 },
+            indent: { left: isTabbed ? 600 : 216 },
             numbering: isTabbed ? undefined : {
               reference: 'observations-numbering',
               level: 0
@@ -358,7 +358,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
               new TextRun({ text: cleanLine, size: 22 })
             ],
             spacing: { after: 100 },
-            indent: { left: isTabbed ? 600 : 200 },
+            indent: { left: isTabbed ? 600 : 216 },
             numbering: isTabbed ? undefined : {
               reference: 'recommendations-numbering',
               level: 0
@@ -750,7 +750,10 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                 alignment: AlignmentType.START,
                 style: {
                   paragraph: {
-                    indent: { left: 200, hanging: 200 }
+                    indent: { left: 216, hanging: 216 }
+                  },
+                  run: {
+                    size: 22
                   }
                 }
               }
@@ -766,7 +769,10 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                 alignment: AlignmentType.START,
                 style: {
                   paragraph: {
-                    indent: { left: 200, hanging: 200 }
+                    indent: { left: 216, hanging: 216 }
+                  },
+                  run: {
+                    size: 22
                   }
                 }
               }
