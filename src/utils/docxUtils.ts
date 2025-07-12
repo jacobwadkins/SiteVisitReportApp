@@ -1,4 +1,4 @@
-import { Document, Packer, Paragraph, TextRun, Table, TableCell, TableRow, ImageRun, BorderStyle, AlignmentType, Footer, PageNumber, ShadingType, LevelFormat, NumberingAlignment } from 'docx';
+import { Document, Packer, Paragraph, TextRun, Table, TableCell, TableRow, ImageRun, BorderStyle, AlignmentType, Footer, PageNumber, ShadingType, LevelFormat } from 'docx';
 import { saveAs } from 'file-saver';
 import { Visit } from '../types';
 
@@ -747,7 +747,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                 level: 0,
                 format: LevelFormat.DECIMAL,
                 text: '%1.',
-                alignment: NumberingAlignment.START,
+                alignment: AlignmentType.START,
                 style: {
                   paragraph: {
                     indent: { left: 200, hanging: 200 }
@@ -763,7 +763,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                 level: 0,
                 format: LevelFormat.LOWER_LETTER,
                 text: '%1.',
-                alignment: NumberingAlignment.START,
+                alignment: AlignmentType.START,
                 style: {
                   paragraph: {
                     indent: { left: 200, hanging: 200 }
