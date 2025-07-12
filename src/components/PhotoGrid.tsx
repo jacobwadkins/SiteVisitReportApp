@@ -27,29 +27,7 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
   // Load photo sources from IndexedDB when component mounts or visit changes
   useEffect(() => {
     const loadPhotoSources = async () => {
-      if (!visit) return;
-      
-      try {
-        const photoData = await photoDB.getPhotosByVisitId(visitId);
-        const sources: Record<string, string> = {};
-        photoData.forEach(photo => {
-          sources[photo.id] = photo.src;
-        });
-        setPhotoSources(sources);
-      } catch (error) {
-        console.error('Failed to load photo sources:', error);
-        // Fallback: clear photo sources if loading fails
-        setPhotoSources({});
-      }
-    };
-    
-    loadPhotoSources();
-  }, [visitId, visit?.photos.length]);
-
-  // Reload when the actual photo IDs change
-  useEffect(() => {
-    const loadPhotoSources = async () => {
-      if (!visit?.photos.length) {
+      if (!visit || !visit.photos.length) {
         setPhotoSources({});
         return;
       }
@@ -58,18 +36,19 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
         const photoData = await photoDB.getPhotosByVisitId(visitId);
         const sources: Record<string, string> = {};
         photoData.forEach(photo => {
-          sources[photo.id] = photo.src;
+          if (photo.src && photo.src.startsWith('data:')) {
+            sources[photo.id] = photo.src;
+          }
         });
         setPhotoSources(sources);
       } catch (error) {
         console.error('Failed to load photo sources:', error);
-        // Fallback: clear photo sources if loading fails
         setPhotoSources({});
       }
     };
     
     loadPhotoSources();
-  }, [visit?.photos.map(p => p.id).join(','), visitId]);
+  }, [visitId, visit?.photos.length, visit?.photos.map(p => p.id).join(',')]);
 
   const {
     register,
