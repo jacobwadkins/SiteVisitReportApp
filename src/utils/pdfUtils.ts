@@ -222,11 +222,12 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
     pdf.line(margin, yPosition + 5, margin + contentWidth, yPosition + 5);
     yPosition += 30;
 
-    const photoWidth = 207; // Adjusted to fit 2 columns (10% reduction)
-    const photoHeight = 155; // 4:3 aspect ratio (10% reduction)
+    const photoWidth = 238; // Increased by 15% from 207pt
+    const photoHeight = 178; // 4:3 aspect ratio, increased by 15% from 155pt
     const photosPerPage = 6; // 2 columns × 3 rows
     const photosPerRow = 2;
     const photoSpacing = 20; // Horizontal spacing between photos
+    const rowSpacing = 238; // Photo (178) + caption (20) + notes (2 × 10 + 10 spacing) + 10pt margin
 
     for (let i = 0; i < visit.photos.length; i += photosPerPage) {
       if (i > 0) {
