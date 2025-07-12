@@ -93,7 +93,12 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
   pdf.setFont('Helvetica', 'normal');
   pdf.text(visit.preparedBy, margin + 300 + labelWidth, 150);
 
-  let yPosition = 232; // 200 (gray box end) + 32 (margin)
+  // Calculate yPosition based on actual gray box position
+  // Find the gray box rect call above to get the current y position
+  const grayBoxY = 80; // This should match your adjusted gray box y position
+  const grayBoxHeight = 90;
+  const grayBoxBottom = grayBoxY + grayBoxHeight;
+  let yPosition = grayBoxBottom + 32; // Gray box bottom + 32pt margin
 
   // Background Section
   if (visit.background) {
