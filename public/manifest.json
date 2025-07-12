@@ -1,0 +1,23 @@
+{
+  "name": "Site Visit Reports",
+  "short_name": "Site Visits",
+  "description": "Professional engineering site visit reporting app",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#1e3a8a",
+  "background_color": "#f5f5f5",
+  "orientation": "portrait-primary",
+  "categories": ["productivity", "business"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiBmaWxsPSIjMWUzYThhIi8+CjxwYXRoIGQ9Ik00OCA2NEg5NlY4MEg0OFY2NFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik00OCA5NkgxNDRWMTEySDQ4Vjk2WiIgZmlsbD0id2hpdGUiLz4KPHA+YXRoIGQ9Ik00OCAxMjhIMTQ0VjE0NEg0OFYxMjhaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMTUyIDY0SDE2OFY4MEgxNTJWNjRaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSIjMWUzYThhIi8+CjxwYXRoIGQ9Ik0xMjggMTcwSDI1NlYyMTRIMTI4VjE3MFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0xMjggMjU2SDM4NFYzMDBIMTI4VjI1NloiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0xMjggMzQySDM4NFYzODZIMTI4VjM0MloiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik00MDUgMTcwSDQ0OVYyMTRINDA1VjE3MFoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
