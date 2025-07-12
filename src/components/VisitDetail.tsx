@@ -26,6 +26,8 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
   const [isEditing, setIsEditing] = useState(false);
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [focusedObservationIndex, setFocusedObservationIndex] = useState<number | null>(null);
+  const [focusedFollowupIndex, setFocusedFollowupIndex] = useState<number | null>(null);
 
   const visit = useStore((state) => state.visits.find((v) => v.id === visitId));
   const updateVisit = useStore((state) => state.updateVisit);
@@ -574,13 +576,32 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                     >
                       <Indent size={16} />
                     </button>
-                    <input
-                      type="text"
-                      value={observation.replace(/^[\t\s]+/, '')} // Display clean value without tabs
-                      onChange={(e) => handleObservationChange(index, e.target.value)}
-                      className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      placeholder={tabbedObservations[index] ? `Bullet point...` : `Observation ${index + 1}...`}
-                    />
+                    {focusedObservationIndex === index ? (
+                      <textarea
+                        value={observation.replace(/^[\t\s]+/, '')}
+                        onChange={(e) => handleObservationChange(index, e.target.value)}
+                        onBlur={() => setFocusedObservationIndex(null)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            setFocusedObservationIndex(null);
+                          }
+                        }}
+                        className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+                        placeholder={tabbedObservations[index] ? `Bullet point...` : `Observation ${index + 1}...`}
+                        rows={Math.max(2, Math.ceil(observation.length / 50))}
+                        autoFocus
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        value={observation.replace(/^[\t\s]+/, '')}
+                        onChange={(e) => handleObservationChange(index, e.target.value)}
+                        onFocus={() => setFocusedObservationIndex(index)}
+                        className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        placeholder={tabbedObservations[index] ? `Bullet point...` : `Observation ${index + 1}...`}
+                      />
+                    )}
                   </div>
                 ))}
               </div>
@@ -612,13 +633,32 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                       >
                         <Indent size={16} />
                       </button>
-                      <input
-                        type="text"
-                        value={followup.replace(/^[\t\s]+/, '')} // Display clean value without tabs
-                        onChange={(e) => handleFollowupChange(index, e.target.value)}
-                        className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                        placeholder={tabbedFollowups[index] ? `Bullet point...` : `Recommendation ${getDisplayLetter(index, tabbedFollowups[index], tabbedFollowups)}...`}
-                      />
+                      {focusedFollowupIndex === index ? (
+                        <textarea
+                          value={followup.replace(/^[\t\s]+/, '')}
+                          onChange={(e) => handleFollowupChange(index, e.target.value)}
+                          onBlur={() => setFocusedFollowupIndex(null)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                              e.preventDefault();
+                              setFocusedFollowupIndex(null);
+                            }
+                          }}
+                          className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+                          placeholder={tabbedFollowups[index] ? `Bullet point...` : `Recommendation ${getDisplayLetter(index, tabbedFollowups[index], tabbedFollowups)}...`}
+                          rows={Math.max(2, Math.ceil(followup.length / 50))}
+                          autoFocus
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          value={followup.replace(/^[\t\s]+/, '')}
+                          onChange={(e) => handleFollowupChange(index, e.target.value)}
+                          onFocus={() => setFocusedFollowupIndex(index)}
+                          className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                          placeholder={tabbedFollowups[index] ? `Bullet point...` : `Recommendation ${getDisplayLetter(index, tabbedFollowups[index], tabbedFollowups)}...`}
+                        />
+                      )}
                     </div>
                   );
                 })}
