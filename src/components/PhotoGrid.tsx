@@ -16,6 +16,7 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
   const [editingPhotoId, setEditingPhotoId] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [photoSources, setPhotoSources] = useState<Record<string, string>>({});
+  const [fullscreenPhotoId, setFullscreenPhotoId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const visit = useStore((state) => state.visits.find((v) => v.id === visitId));
@@ -131,8 +132,44 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
 
   if (!visit) return null;
 
+  const fullscreenPhoto = fullscreenPhotoId ? visit.photos.find(p => p.id === fullscreenPhotoId) : null;
+
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-5">
+    <>
+      {/* Fullscreen Photo Modal */}
+      {fullscreenPhotoId && fullscreenPhoto && photoSources[fullscreenPhotoId] && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+          onClick={() => setFullscreenPhotoId(null)}
+        >
+          <div className="relative max-w-full max-h-full">
+            <button
+              onClick={() => setFullscreenPhotoId(null)}
+              className="absolute top-4 right-4 z-10 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
+            >
+              <X size={24} />
+            </button>
+            <img
+              src={photoSources[fullscreenPhotoId]}
+              alt={fullscreenPhoto.description || 'Site photo'}
+              className="max-w-full max-h-full object-contain"
+              onClick={(e) => e.stopPropagation()}
+            />
+            {(fullscreenPhoto.description || fullscreenPhoto.notes) && (
+              <div className="absolute bottom-4 left-4 right-4 bg-black/70 text-white p-4 rounded-lg">
+                {fullscreenPhoto.description && (
+                  <h3 className="font-semibold mb-2">{fullscreenPhoto.description}</h3>
+                )}
+                {fullscreenPhoto.notes && (
+                  <p className="text-sm opacity-90">{fullscreenPhoto.notes}</p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-5">
       {/* Upload Area */}
       <div
         onDrop={handleDrop}
@@ -173,7 +210,8 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
                 <img
                   src={photoSources[photo.id]}
                   alt={photo.description || `Site photo ${index + 1}`}
-                  className="w-full h-64 object-cover"
+                  className="w-full h-64 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                  onClick={() => setFullscreenPhotoId(photo.id)}
                 />
               ) : (
                 <div className="w-full h-64 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
@@ -263,6 +301,7 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
           ))}
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 };
