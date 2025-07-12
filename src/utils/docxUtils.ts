@@ -13,6 +13,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
       footerGray: '808080'
     };
     const margin = 720; // 36pt = 0.5 inch
+    const labelWidth = 80 * 20; // 80pt converted to twips (1pt = 20 twips)
 
     // Helper functions for display numbering (matching PDF logic)
     const getDisplayNumber = (index: number, isTabbed: boolean, tabbedArray: boolean[]): string => {
@@ -39,6 +40,646 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
       return String.fromCharCode(97 + count);
     };
 
+    // Build document children array
+    const documentChildren = [];
+
+    // Header: Title bar with company branding
+    documentChildren.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: 'Site Visit Report',
+            bold: true,
+            size: 44, // 22pt
+            color: 'FFFFFF'
+          }),
+          new TextRun({
+            text: '\t\t\t\t\t\t\t\t\t\tHaskell',
+            size: 20, // 10pt
+            color: 'FFFFFF'
+          })
+        ],
+        shading: {
+          type: ShadingType.SOLID,
+          color: colors.navy,
+          fill: colors.navy
+        },
+        spacing: { after: 400 }
+      })
+    );
+
+    // Info Box: Two-column grid layout
+    documentChildren.push(
+      new Table({
+        width: { size: 100, type: 'pct' },
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({ text: 'Client:', bold: true, size: 20 }),
+                      new TextRun({ text: ' ' + visit.clientName, size: 20 })
+                    ]
+                  })
+                ],
+                shading: { 
+                  type: ShadingType.SOLID,
+                  fill: colors.lightGray 
+                },
+                margins: { top: 100, bottom: 100, left: 200, right: 100 },
+                width: { size: 50, type: 'pct' }
+              }),
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({ text: 'Date:', bold: true, size: 20 }),
+                      new TextRun({ text: ' ' + new Date(visit.visitDate).toLocaleDateString(), size: 20 })
+                    ]
+                  })
+                ],
+                shading: { 
+                  type: ShadingType.SOLID,
+                  fill: colors.lightGray 
+                },
+                margins: { top: 100, bottom: 100, left: 200, right: 100 },
+                width: { size: 50, type: 'pct' }
+              })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({ text: 'Site:', bold: true, size: 20 }),
+                      new TextRun({ text: ' ' + visit.siteName, size: 20 })
+                    ]
+                  })
+                ],
+                shading: { 
+                  type: ShadingType.SOLID,
+                  fill: colors.lightGray 
+                },
+                margins: { top: 100, bottom: 100, left: 200, right: 100 },
+                width: { size: 50, type: 'pct' }
+              }),
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({ text: 'Prepared by:', bold: true, size: 20 }),
+                      new TextRun({ text: ' ' + visit.preparedBy, size: 20 })
+                    ]
+                  })
+                ],
+                shading: { 
+                  type: ShadingType.SOLID,
+                  fill: colors.lightGray 
+                },
+                margins: { top: 100, bottom: 100, left: 200, right: 100 },
+                width: { size: 50, type: 'pct' }
+              })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({ text: 'Project No.:', bold: true, size: 20 }),
+                      new TextRun({ text: ' ' + visit.projectNo, size: 20 })
+                    ]
+                  })
+                ],
+                shading: { 
+                  type: ShadingType.SOLID,
+                  fill: colors.lightGray 
+                },
+                margins: { top: 100, bottom: 100, left: 200, right: 100 },
+                width: { size: 50, type: 'pct' }
+              }),
+              new TableCell({
+                children: [new Paragraph({ text: '' })],
+                shading: { 
+                  type: ShadingType.SOLID,
+                  fill: colors.lightGray 
+                },
+                margins: { top: 100, bottom: 100, left: 200, right: 100 },
+                width: { size: 50, type: 'pct' }
+              })
+            ]
+          })
+        ],
+        borders: {
+          top: { style: BorderStyle.SINGLE, size: 1, color: colors.borderGray },
+          bottom: { style: BorderStyle.SINGLE, size: 1, color: colors.borderGray },
+          left: { style: BorderStyle.SINGLE, size: 1, color: colors.borderGray },
+          right: { style: BorderStyle.SINGLE, size: 1, color: colors.borderGray },
+          insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: colors.borderGray },
+          insideVertical: { style: BorderStyle.SINGLE, size: 1, color: colors.borderGray },
+        }
+      })
+    );
+
+    // Spacing after info box
+    documentChildren.push(new Paragraph({ text: '', spacing: { after: 640 } }));
+
+    // Background Section
+    if (visit.background) {
+      documentChildren.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: '1. Background & Purpose',
+              bold: true,
+              size: 28, // 14pt
+              color: colors.navy
+            })
+          ],
+          spacing: { after: 500 },
+          border: {
+            bottom: {
+              color: colors.navy,
+              space: 1,
+              style: BorderStyle.SINGLE,
+              size: 6,
+            }
+          }
+        }),
+        new Paragraph({
+          children: [new TextRun({ text: visit.background, size: 22 })], // 11pt
+          spacing: { after: 400 },
+          indent: { left: 200 } // ~10pt indent
+        })
+      );
+    }
+
+    // Observations Section
+    if (visit.observations) {
+      documentChildren.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: '2. Site Observations',
+              bold: true,
+              size: 28, // 14pt
+              color: colors.navy
+            })
+          ],
+          spacing: { after: 500 },
+          border: {
+            bottom: {
+              color: colors.navy,
+              space: 1,
+              style: BorderStyle.SINGLE,
+              size: 6,
+            }
+          }
+        })
+      );
+
+      const observationLines = visit.observations.split('\n').filter(line => line.trim());
+      const tabbedObservations = observationLines.map(line => line.startsWith('\t') || line.startsWith('    '));
+
+      observationLines.forEach((line, index) => {
+        const cleanLine = line.replace(/^[\t\s]+/, '');
+        const isTabbed = tabbedObservations[index];
+        const displayNumber = getDisplayNumber(index, isTabbed, tabbedObservations);
+        
+        documentChildren.push(
+          new Paragraph({
+            children: [
+              new TextRun({ text: `${displayNumber}${isTabbed ? '' : '.'} `, size: 22 }),
+              new TextRun({ text: cleanLine, size: 22 })
+            ],
+            spacing: { after: 100 },
+            indent: { left: isTabbed ? 600 : 200 }
+          })
+        );
+      });
+
+      documentChildren.push(new Paragraph({ text: '', spacing: { after: 300 } }));
+    }
+
+    // Follow-ups Section
+    if (visit.followups) {
+      documentChildren.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: '3. Recommendations & Follow-up Actions',
+              bold: true,
+              size: 28, // 14pt
+              color: colors.navy
+            })
+          ],
+          spacing: { after: 500 },
+          border: {
+            bottom: {
+              color: colors.navy,
+              space: 1,
+              style: BorderStyle.SINGLE,
+              size: 6,
+            }
+          }
+        })
+      );
+
+      const followupLines = visit.followups.split('\n').filter(line => line.trim());
+      const tabbedFollowups = followupLines.map(line => line.startsWith('\t') || line.startsWith('    '));
+
+      followupLines.forEach((line, index) => {
+        const cleanLine = line.replace(/^[\t\s]+/, '');
+        const isTabbed = tabbedFollowups[index];
+        const displayLetter = getDisplayLetter(index, isTabbed, tabbedFollowups);
+        
+        documentChildren.push(
+          new Paragraph({
+            children: [
+              new TextRun({ text: `${displayLetter}${isTabbed ? '' : '.'} `, size: 22 }),
+              new TextRun({ text: cleanLine, size: 22 })
+            ],
+            spacing: { after: 100 },
+            indent: { left: isTabbed ? 600 : 200 }
+          })
+        );
+      });
+
+      documentChildren.push(new Paragraph({ text: '', spacing: { after: 300 } }));
+    }
+
+    // Photos Section
+    if (visit.photos && visit.photos.length > 0) {
+      // Add page break and photos header
+      documentChildren.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: 'Site Photos',
+              bold: true,
+              size: 28, // 14pt
+              color: colors.navy
+            })
+          ],
+          spacing: { after: 600 },
+          pageBreakBefore: true,
+          border: {
+            bottom: {
+              color: colors.navy,
+              space: 1,
+              style: BorderStyle.SINGLE,
+              size: 6,
+            }
+          }
+        })
+      );
+
+      const photosPerPage = 6;
+      const totalPages = Math.ceil(visit.photos.length / photosPerPage);
+
+      for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
+        const startIndex = pageIndex * photosPerPage;
+        
+        // Add page header for subsequent photo pages
+        if (pageIndex > 0) {
+          documentChildren.push(
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: 'Site Photos (continued)',
+                  bold: true,
+                  size: 28,
+                  color: colors.navy
+                })
+              ],
+              spacing: { after: 600 },
+              pageBreakBefore: true,
+              border: {
+                bottom: {
+                  color: colors.navy,
+                  space: 1,
+                  style: BorderStyle.SINGLE,
+                  size: 6,
+                }
+              }
+            })
+          );
+        }
+
+        // Create 3 columns × 12 rows table
+        const tableRows = [];
+
+        for (let rowGroup = 0; rowGroup < 3; rowGroup++) {
+          const leftPhotoIndex = startIndex + (rowGroup * 2);
+          const rightPhotoIndex = startIndex + (rowGroup * 2) + 1;
+          const leftPhoto = leftPhotoIndex < visit.photos.length ? visit.photos[leftPhotoIndex] : null;
+          const rightPhoto = rightPhotoIndex < visit.photos.length ? visit.photos[rightPhotoIndex] : null;
+
+          // Row 1, 5, 9: Photos
+          const photoRowCells = [];
+          
+          // Left photo cell
+          if (leftPhoto) {
+            try {
+              const base64Data = leftPhoto.src.split(',')[1];
+              const binaryString = atob(base64Data);
+              const bytes = new Uint8Array(binaryString.length);
+              for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+              }
+              
+              photoRowCells.push(
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new ImageRun({
+                          data: bytes,
+                          transformation: {
+                            width: 307, // 230pt * 1.33
+                            height: 230 // 172pt * 1.33
+                          }
+                        })
+                      ],
+                      alignment: AlignmentType.CENTER
+                    })
+                  ],
+                  margins: { top: 100, bottom: 100, left: 100, right: 100 },
+                  width: { size: 47.5, type: 'pct' }
+                })
+              );
+            } catch (error) {
+              photoRowCells.push(
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: `[Photo ${leftPhotoIndex + 1} failed to load]`,
+                          size: 20,
+                          color: colors.textGray
+                        })
+                      ],
+                      alignment: AlignmentType.CENTER
+                    })
+                  ],
+                  margins: { top: 100, bottom: 100, left: 100, right: 100 },
+                  width: { size: 47.5, type: 'pct' }
+                })
+              );
+            }
+          } else {
+            photoRowCells.push(
+              new TableCell({
+                children: [new Paragraph({ text: '' })],
+                margins: { top: 100, bottom: 100, left: 100, right: 100 },
+                width: { size: 47.5, type: 'pct' }
+              })
+            );
+          }
+
+          // Center spacing column
+          photoRowCells.push(
+            new TableCell({
+              children: [new Paragraph({ text: '' })],
+              margins: { top: 0, bottom: 0, left: 0, right: 0 },
+              width: { size: 720, type: 'dxa' } // 0.5" = 720 twips
+            })
+          );
+
+          // Right photo cell
+          if (rightPhoto) {
+            try {
+              const base64Data = rightPhoto.src.split(',')[1];
+              const binaryString = atob(base64Data);
+              const bytes = new Uint8Array(binaryString.length);
+              for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+              }
+              
+              photoRowCells.push(
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new ImageRun({
+                          data: bytes,
+                          transformation: {
+                            width: 307, // 230pt * 1.33
+                            height: 230 // 172pt * 1.33
+                          }
+                        })
+                      ],
+                      alignment: AlignmentType.CENTER
+                    })
+                  ],
+                  margins: { top: 100, bottom: 100, left: 100, right: 100 },
+                  width: { size: 47.5, type: 'pct' }
+                })
+              );
+            } catch (error) {
+              photoRowCells.push(
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: `[Photo ${rightPhotoIndex + 1} failed to load]`,
+                          size: 20,
+                          color: colors.textGray
+                        })
+                      ],
+                      alignment: AlignmentType.CENTER
+                    })
+                  ],
+                  margins: { top: 100, bottom: 100, left: 100, right: 100 },
+                  width: { size: 47.5, type: 'pct' }
+                })
+              );
+            }
+          } else {
+            photoRowCells.push(
+              new TableCell({
+                children: [new Paragraph({ text: '' })],
+                margins: { top: 100, bottom: 100, left: 100, right: 100 },
+                width: { size: 47.5, type: 'pct' }
+              })
+            );
+          }
+
+          tableRows.push(new TableRow({ children: photoRowCells }));
+
+          // Row 2, 6, 10: Captions with navy background
+          const captionRowCells = [];
+          
+          // Left caption
+          const leftLabel = leftPhoto ? (leftPhoto.description 
+            ? `Photo ${leftPhotoIndex + 1}: ${leftPhoto.description.substring(0, 35)}${leftPhoto.description.length > 35 ? '...' : ''}`
+            : `Photo ${leftPhotoIndex + 1}`) : '';
+          
+          captionRowCells.push(
+            new TableCell({
+              children: [
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: leftLabel,
+                      color: 'FFFFFF',
+                      size: 20,
+                      bold: true
+                    })
+                  ],
+                  alignment: AlignmentType.CENTER
+                })
+              ],
+              shading: leftPhoto ? { 
+                type: ShadingType.SOLID, 
+                color: colors.navy, 
+                fill: colors.navy 
+              } : undefined,
+              margins: { top: 100, bottom: 100, left: 100, right: 100 },
+              width: { size: 47.5, type: 'pct' }
+            })
+          );
+
+          // Center spacing
+          captionRowCells.push(
+            new TableCell({
+              children: [new Paragraph({ text: '' })],
+              margins: { top: 0, bottom: 0, left: 0, right: 0 },
+              width: { size: 720, type: 'dxa' }
+            })
+          );
+
+          // Right caption
+          const rightLabel = rightPhoto ? (rightPhoto.description 
+            ? `Photo ${rightPhotoIndex + 1}: ${rightPhoto.description.substring(0, 35)}${rightPhoto.description.length > 35 ? '...' : ''}`
+            : `Photo ${rightPhotoIndex + 1}`) : '';
+          
+          captionRowCells.push(
+            new TableCell({
+              children: [
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: rightLabel,
+                      color: 'FFFFFF',
+                      size: 20,
+                      bold: true
+                    })
+                  ],
+                  alignment: AlignmentType.CENTER
+                })
+              ],
+              shading: rightPhoto ? { 
+                type: ShadingType.SOLID, 
+                color: colors.navy, 
+                fill: colors.navy 
+              } : undefined,
+              margins: { top: 100, bottom: 100, left: 100, right: 100 },
+              width: { size: 47.5, type: 'pct' }
+            })
+          );
+
+          tableRows.push(new TableRow({ children: captionRowCells }));
+
+          // Row 3, 7, 11: Notes
+          const notesRowCells = [];
+          
+          notesRowCells.push(
+            new TableCell({
+              children: [
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: leftPhoto?.notes ? leftPhoto.notes.split('\n').slice(0, 2).join(' ') : '',
+                      size: 18, // 9pt
+                      color: colors.textGray
+                    })
+                  ],
+                  alignment: AlignmentType.CENTER
+                })
+              ],
+              margins: { top: 100, bottom: 100, left: 100, right: 100 },
+              width: { size: 47.5, type: 'pct' }
+            })
+          );
+
+          // Center spacing
+          notesRowCells.push(
+            new TableCell({
+              children: [new Paragraph({ text: '' })],
+              margins: { top: 0, bottom: 0, left: 0, right: 0 },
+              width: { size: 720, type: 'dxa' }
+            })
+          );
+
+          notesRowCells.push(
+            new TableCell({
+              children: [
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: rightPhoto?.notes ? rightPhoto.notes.split('\n').slice(0, 2).join(' ') : '',
+                      size: 18, // 9pt
+                      color: colors.textGray
+                    })
+                  ],
+                  alignment: AlignmentType.CENTER
+                })
+              ],
+              margins: { top: 100, bottom: 100, left: 100, right: 100 },
+              width: { size: 47.5, type: 'pct' }
+            })
+          );
+
+          tableRows.push(new TableRow({ children: notesRowCells }));
+
+          // Row 4, 8, 12: Blank spacing
+          const spacingRowCells = [
+            new TableCell({
+              children: [new Paragraph({ text: '' })],
+              margins: { top: 100, bottom: 240, left: 100, right: 100 }, // 12pt bottom margin
+              width: { size: 47.5, type: 'pct' }
+            }),
+            new TableCell({
+              children: [new Paragraph({ text: '' })],
+              margins: { top: 0, bottom: 0, left: 0, right: 0 },
+              width: { size: 720, type: 'dxa' }
+            }),
+            new TableCell({
+              children: [new Paragraph({ text: '' })],
+              margins: { top: 100, bottom: 240, left: 100, right: 100 }, // 12pt bottom margin
+              width: { size: 47.5, type: 'pct' }
+            })
+          ];
+
+          tableRows.push(new TableRow({ children: spacingRowCells }));
+        }
+
+        // Add the complete table to document
+        documentChildren.push(
+          new Table({
+            width: { size: 100, type: 'pct' },
+            rows: tableRows,
+            borders: {
+              top: { style: BorderStyle.NONE },
+              bottom: { style: BorderStyle.NONE },
+              left: { style: BorderStyle.NONE },
+              right: { style: BorderStyle.NONE },
+              insideHorizontal: { style: BorderStyle.NONE },
+              insideVertical: { style: BorderStyle.NONE },
+            }
+          })
+        );
+      }
+    }
+
     const doc = new Document({
       sections: [{
         properties: {
@@ -58,7 +699,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                 children: [
                   new TextRun({
                     text: 'Page ',
-                    size: 16,
+                    size: 16, // 8pt
                     color: colors.footerGray
                   }),
                   new TextRun({
@@ -87,546 +728,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
             ]
           })
         },
-        children: [
-          // Header: Title bar with company branding
-          new Paragraph({
-            children: [
-              new TextRun({
-                text: 'Site Visit Report\t\t\t\t\t\t\t\t\t\tHaskell',
-                bold: true,
-                size: 44,
-                color: 'FFFFFF'
-              })
-            ],
-            shading: {
-              type: ShadingType.SOLID,
-              color: colors.navy,
-              fill: colors.navy
-            },
-            spacing: { after: 400 },
-          }),
-
-          // Info Box: Table layout
-          new Table({
-            width: { size: 100, type: 'pct' },
-            rows: [
-              new TableRow({
-                children: [
-                  new TableCell({
-                    children: [
-                      new Paragraph({
-                        children: [
-                          new TextRun({ text: 'Client: ', bold: true, size: 20 }),
-                          new TextRun({ text: visit.clientName, size: 20 })
-                        ]
-                      })
-                    ],
-                    shading: { fill: colors.lightGray },
-                    margins: { top: 100, bottom: 100, left: 200, right: 100 },
-                    width: { size: 50, type: 'pct' }
-                  }),
-                  new TableCell({
-                    children: [
-                      new Paragraph({
-                        children: [
-                          new TextRun({ text: 'Date: ', bold: true, size: 20 }),
-                          new TextRun({ text: new Date(visit.visitDate).toLocaleDateString(), size: 20 })
-                        ]
-                      })
-                    ],
-                    shading: { fill: colors.lightGray },
-                    margins: { top: 100, bottom: 100, left: 200, right: 100 },
-                    width: { size: 50, type: 'pct' }
-                  })
-                ]
-              }),
-              new TableRow({
-                children: [
-                  new TableCell({
-                    children: [
-                      new Paragraph({
-                        children: [
-                          new TextRun({ text: 'Site: ', bold: true, size: 20 }),
-                          new TextRun({ text: visit.siteName, size: 20 })
-                        ]
-                      })
-                    ],
-                    shading: { fill: colors.lightGray },
-                    margins: { top: 100, bottom: 100, left: 200, right: 100 },
-                    width: { size: 50, type: 'pct' }
-                  }),
-                  new TableCell({
-                    children: [
-                      new Paragraph({
-                        children: [
-                          new TextRun({ text: 'Prepared by: ', bold: true, size: 20 }),
-                          new TextRun({ text: visit.preparedBy, size: 20 })
-                        ]
-                      })
-                    ],
-                    shading: { fill: colors.lightGray },
-                    margins: { top: 100, bottom: 100, left: 200, right: 100 },
-                    width: { size: 50, type: 'pct' }
-                  })
-                ]
-              }),
-              new TableRow({
-                children: [
-                  new TableCell({
-                    children: [
-                      new Paragraph({
-                        children: [
-                          new TextRun({ text: 'Project No.: ', bold: true, size: 20 }),
-                          new TextRun({ text: visit.projectNo, size: 20 })
-                        ]
-                      })
-                    ],
-                    shading: { fill: colors.lightGray },
-                    margins: { top: 100, bottom: 100, left: 200, right: 100 },
-                    width: { size: 50, type: 'pct' }
-                  }),
-                  new TableCell({
-                    children: [new Paragraph({ text: '' })],
-                    shading: { fill: colors.lightGray },
-                    margins: { top: 100, bottom: 100, left: 200, right: 100 },
-                    width: { size: 50, type: 'pct' }
-                  })
-                ]
-              })
-            ],
-            borders: {
-              top: { style: BorderStyle.SINGLE, size: 1, color: colors.borderGray },
-              bottom: { style: BorderStyle.SINGLE, size: 1, color: colors.borderGray },
-              left: { style: BorderStyle.SINGLE, size: 1, color: colors.borderGray },
-              right: { style: BorderStyle.SINGLE, size: 1, color: colors.borderGray },
-              insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: colors.borderGray },
-              insideVertical: { style: BorderStyle.SINGLE, size: 1, color: colors.borderGray },
-            }
-          }),
-
-          new Paragraph({ text: '', spacing: { after: 640 } }),
-
-          // Background Section
-          ...(visit.background ? [
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: '1. Background & Purpose',
-                  bold: true,
-                  size: 28,
-                  color: colors.navy
-                })
-              ],
-              spacing: { after: 500 },
-              border: {
-                bottom: {
-                  color: colors.navy,
-                  space: 1,
-                  style: BorderStyle.SINGLE,
-                  size: 6,
-                }
-              }
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: visit.background, size: 22 })],
-              spacing: { after: 400 },
-              indent: { left: 200 }
-            })
-          ] : []),
-
-          // Observations Section
-          ...(visit.observations ? (() => {
-            const lines = visit.observations.split('\n').filter(line => line.trim());
-            const tabbedObservations = lines.map(line => line.startsWith('\t') || line.startsWith('    '));
-            
-            return [
-              new Paragraph({
-                children: [
-                  new TextRun({
-                    text: '2. Site Observations',
-                    bold: true,
-                    size: 28,
-                    color: colors.navy
-                  })
-                ],
-                spacing: { after: 500 },
-                border: {
-                  bottom: {
-                    color: colors.navy,
-                    space: 1,
-                    style: BorderStyle.SINGLE,
-                    size: 6,
-                  }
-                }
-              }),
-              ...lines.map((line, index) => {
-                const cleanLine = line.replace(/^[\t\s]+/, '');
-                const isTabbed = tabbedObservations[index];
-                const displayNumber = getDisplayNumber(index, isTabbed, tabbedObservations);
-                
-                return new Paragraph({
-                  children: [
-                    new TextRun({ text: `${displayNumber}${isTabbed ? '' : '.'} `, size: 22 }),
-                    new TextRun({ text: cleanLine, size: 22 })
-                  ],
-                  spacing: { after: 100 },
-                  indent: { left: isTabbed ? 600 : 200 }
-                });
-              }),
-              new Paragraph({ text: '', spacing: { after: 300 } })
-            ];
-          })() : []),
-
-          // Follow-ups Section
-          ...(visit.followups ? (() => {
-            const lines = visit.followups.split('\n').filter(line => line.trim());
-            const tabbedFollowups = lines.map(line => line.startsWith('\t') || line.startsWith('    '));
-            
-            return [
-              new Paragraph({
-                children: [
-                  new TextRun({
-                    text: '3. Recommendations & Follow-up Actions',
-                    bold: true,
-                    size: 28,
-                    color: colors.navy
-                  })
-                ],
-                spacing: { after: 500 },
-                border: {
-                  bottom: {
-                    color: colors.navy,
-                    space: 1,
-                    style: BorderStyle.SINGLE,
-                    size: 6,
-                  }
-                }
-              }),
-              ...lines.map((line, index) => {
-                const cleanLine = line.replace(/^[\t\s]+/, '');
-                const isTabbed = tabbedFollowups[index];
-                const displayLetter = getDisplayLetter(index, isTabbed, tabbedFollowups);
-                
-                return new Paragraph({
-                  children: [
-                    new TextRun({ text: `${displayLetter}${isTabbed ? '' : '.'} `, size: 22 }),
-                    new TextRun({ text: cleanLine, size: 22 })
-                  ],
-                  spacing: { after: 100 },
-                  indent: { left: isTabbed ? 600 : 200 }
-                });
-              }),
-              new Paragraph({ text: '', spacing: { after: 300 } })
-            ];
-          })() : []),
-
-          // Photos Section
-          ...(visit.photos && visit.photos.length > 0 ? [
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: 'Site Photos',
-                  bold: true,
-                  size: 28,
-                  color: colors.navy
-                })
-              ],
-              spacing: { after: 500 },
-              pageBreakBefore: true,
-              border: {
-                bottom: {
-                  color: colors.navy,
-                  space: 1,
-                  style: BorderStyle.SINGLE,
-                  size: 6,
-                }
-              }
-            }),
-            // Create photo tables - 6 photos per page in 2x12 table structure
-            ...(() => {
-              const photoTables = [];
-              const photosPerPage = 6;
-              
-              for (let pageIndex = 0; pageIndex < Math.ceil(visit.photos.length / photosPerPage); pageIndex++) {
-                const startIndex = pageIndex * photosPerPage;
-                const photosOnPage = visit.photos.slice(startIndex, startIndex + photosPerPage);
-                
-                // Add page header for subsequent photo pages
-                if (pageIndex > 0) {
-                  photoTables.push(
-                    new Paragraph({
-                      children: [
-                        new TextRun({
-                          text: 'Site Photos (continued)',
-                          bold: true,
-                          size: 28,
-                          color: colors.navy
-                        })
-                      ],
-                      spacing: { after: 500 },
-                      pageBreakBefore: true,
-                      border: {
-                        bottom: {
-                          color: colors.navy,
-                          space: 1,
-                          style: BorderStyle.SINGLE,
-                          size: 6,
-                        }
-                      }
-                    })
-                  );
-                }
-                
-                // Create 2x12 table for this page
-                const tableRows = [];
-                
-                for (let rowGroup = 0; rowGroup < 3; rowGroup++) { // 3 groups of 4 rows each
-                  const leftPhotoIndex = startIndex + (rowGroup * 2);
-                  const rightPhotoIndex = startIndex + (rowGroup * 2) + 1;
-                  const leftPhoto = leftPhotoIndex < visit.photos.length ? visit.photos[leftPhotoIndex] : null;
-                  const rightPhoto = rightPhotoIndex < visit.photos.length ? visit.photos[rightPhotoIndex] : null;
-                  
-                  // Row 1, 5, 9: Photos
-                  const photoRow = new TableRow({
-                    children: [
-                      new TableCell({
-                        children: [
-                          leftPhoto ? (() => {
-                            try {
-                              const base64Data = leftPhoto.src.split(',')[1];
-                              const binaryString = atob(base64Data);
-                              const bytes = new Uint8Array(binaryString.length);
-                              for (let i = 0; i < binaryString.length; i++) {
-                                bytes[i] = binaryString.charCodeAt(i);
-                              }
-                              return new Paragraph({
-                                children: [
-                                  new ImageRun({
-                                    data: bytes,
-                                    transformation: {
-                                      width: 230 * 1.33, // 230pt converted to EMU
-                                      height: 172 * 1.33  // 172pt converted to EMU
-                                    }
-                                  })
-                                ],
-                                alignment: AlignmentType.CENTER
-                              });
-                            } catch (error) {
-                              return new Paragraph({
-                                children: [
-                                  new TextRun({
-                                    text: `[Photo ${leftPhotoIndex + 1} failed to load]`,
-                                    size: 20,
-                                    color: colors.textGray
-                                  })
-                                ],
-                                alignment: AlignmentType.CENTER
-                              });
-                            }
-                          })() : new Paragraph({ text: '' })
-                        ],
-                        margins: { top: 100, bottom: 100, left: 100, right: 100 },
-                        width: { size: 47.5, type: 'pct' }
-                      }),
-                      // Center spacing column (0.5" wide)
-                      new TableCell({
-                        children: [new Paragraph({ text: '' })],
-                        margins: { top: 0, bottom: 0, left: 0, right: 0 },
-                        width: { size: 720, type: 'dxa' } // 0.5" = 720 twips
-                      }),
-                      new TableCell({
-                        children: [
-                          rightPhoto ? (() => {
-                            try {
-                              const base64Data = rightPhoto.src.split(',')[1];
-                              const binaryString = atob(base64Data);
-                              const bytes = new Uint8Array(binaryString.length);
-                              for (let i = 0; i < binaryString.length; i++) {
-                                bytes[i] = binaryString.charCodeAt(i);
-                              }
-                              return new Paragraph({
-                                children: [
-                                  new ImageRun({
-                                    data: bytes,
-                                    transformation: {
-                                      width: 230 * 1.33, // 230pt converted to EMU
-                                      height: 172 * 1.33  // 172pt converted to EMU
-                                    }
-                                  })
-                                ],
-                                alignment: AlignmentType.CENTER
-                              });
-                            } catch (error) {
-                              return new Paragraph({
-                                children: [
-                                  new TextRun({
-                                    text: `[Photo ${rightPhotoIndex + 1} failed to load]`,
-                                    size: 20,
-                                    color: colors.textGray
-                                  })
-                                ],
-                                alignment: AlignmentType.CENTER
-                              });
-                            }
-                          })() : new Paragraph({ text: '' })
-                        ],
-                        margins: { top: 100, bottom: 100, left: 100, right: 100 },
-                        width: { size: 47.5, type: 'pct' }
-                      })
-                    ]
-                  });
-                  
-                  // Row 2, 6, 10: Captions with navy background
-                  const captionRow = new TableRow({
-                    children: [
-                      new TableCell({
-                        children: [
-                          new Paragraph({
-                            children: [
-                              new TextRun({
-                                text: leftPhoto ? (leftPhoto.description 
-                                  ? `Photo ${leftPhotoIndex + 1}: ${leftPhoto.description.substring(0, 35)}${leftPhoto.description.length > 35 ? '...' : ''}`
-                                  : `Photo ${leftPhotoIndex + 1}`) : '',
-                                color: 'FFFFFF',
-                                size: 20,
-                                bold: true
-                              })
-                            ],
-                            alignment: AlignmentType.CENTER
-                          })
-                        ],
-                        shading: leftPhoto ? { 
-                          type: ShadingType.SOLID, 
-                          color: colors.navy, 
-                          fill: colors.navy 
-                        } : undefined,
-                        margins: { top: 100, bottom: 100, left: 100, right: 100 },
-                        width: { size: 47.5, type: 'pct' }
-                      }),
-                      // Center spacing column
-                      new TableCell({
-                        children: [new Paragraph({ text: '' })],
-                        margins: { top: 0, bottom: 0, left: 0, right: 0 },
-                        width: { size: 720, type: 'dxa' }
-                      }),
-                      new TableCell({
-                        children: [
-                          new Paragraph({
-                            children: [
-                              new TextRun({
-                                text: rightPhoto ? (rightPhoto.description 
-                                  ? `Photo ${rightPhotoIndex + 1}: ${rightPhoto.description.substring(0, 35)}${rightPhoto.description.length > 35 ? '...' : ''}`
-                                  : `Photo ${rightPhotoIndex + 1}`) : '',
-                                color: 'FFFFFF',
-                                size: 20,
-                                bold: true
-                              })
-                            ],
-                            alignment: AlignmentType.CENTER
-                          })
-                        ],
-                        shading: rightPhoto ? { 
-                          type: ShadingType.SOLID, 
-                          color: colors.navy, 
-                          fill: colors.navy 
-                        } : undefined,
-                        margins: { top: 100, bottom: 100, left: 100, right: 100 },
-                        width: { size: 47.5, type: 'pct' }
-                      })
-                    ]
-                  });
-                  
-                  // Row 3, 7, 11: Notes in gray text
-                  const notesRow = new TableRow({
-                    children: [
-                      new TableCell({
-                        children: [
-                          new Paragraph({
-                            children: [
-                              new TextRun({
-                                text: leftPhoto?.notes ? leftPhoto.notes.split('\n').slice(0, 2).join(' ') : '',
-                                size: 18,
-                                color: colors.textGray
-                              })
-                            ],
-                            alignment: AlignmentType.CENTER
-                          })
-                        ],
-                        margins: { top: 100, bottom: 100, left: 100, right: 100 },
-                        width: { size: 47.5, type: 'pct' }
-                      }),
-                      // Center spacing column
-                      new TableCell({
-                        children: [new Paragraph({ text: '' })],
-                        margins: { top: 0, bottom: 0, left: 0, right: 0 },
-                        width: { size: 720, type: 'dxa' }
-                      }),
-                      new TableCell({
-                        children: [
-                          new Paragraph({
-                            children: [
-                              new TextRun({
-                                text: rightPhoto?.notes ? rightPhoto.notes.split('\n').slice(0, 2).join(' ') : '',
-                                size: 18,
-                                color: colors.textGray
-                              })
-                            ],
-                            alignment: AlignmentType.CENTER
-                          })
-                        ],
-                        margins: { top: 100, bottom: 100, left: 100, right: 100 },
-                        width: { size: 47.5, type: 'pct' }
-                      })
-                    ]
-                  });
-                  
-                  // Row 4, 8, 12: Blank spacing rows
-                  const spacingRow = new TableRow({
-                    children: [
-                      new TableCell({
-                        children: [new Paragraph({ text: '' })],
-                        margins: { top: 100, bottom: 240, left: 100, right: 100 }, // 12pt bottom margin
-                        width: { size: 47.5, type: 'pct' }
-                      }),
-                      // Center spacing column
-                      new TableCell({
-                        children: [new Paragraph({ text: '' })],
-                        margins: { top: 0, bottom: 0, left: 0, right: 0 },
-                        width: { size: 720, type: 'dxa' }
-                      }),
-                      new TableCell({
-                        children: [new Paragraph({ text: '' })],
-                        margins: { top: 100, bottom: 240, left: 100, right: 100 }, // 12pt bottom margin
-                        width: { size: 47.5, type: 'pct' }
-                      })
-                    ]
-                  });
-                  
-                  // Add all 4 rows for this group
-                  tableRows.push(photoRow, captionRow, notesRow, spacingRow);
-                }
-                
-                // Create the table with all 12 rows and 3 columns
-                photoTables.push(
-                  new Table({
-                    width: { size: 100, type: 'pct' },
-                    rows: tableRows,
-                    borders: {
-                      top: { style: BorderStyle.NONE },
-                      bottom: { style: BorderStyle.NONE },
-                      left: { style: BorderStyle.NONE },
-                      right: { style: BorderStyle.NONE },
-                      insideHorizontal: { style: BorderStyle.NONE },
-                      insideVertical: { style: BorderStyle.NONE },
-                    }
-                  })
-                );
-              }
-              
-              return photoTables;
-            })()
-          ] : [])
-        ]
+        children: documentChildren
       }]
     });
 
