@@ -220,7 +220,7 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
     pdf.setLineWidth(0.5);
     pdf.setDrawColor(colors.navy.r, colors.navy.g, colors.navy.b);
     pdf.line(margin, yPosition + 5, margin + contentWidth, yPosition + 5);
-    yPosition += 30;
+    yPosition += 15;
 
     const photoWidth = 226; // Increased by 15% from 207pt
     const photoHeight = 170; // 4:3 aspect ratio, increased by 15% from 155pt
