@@ -102,7 +102,7 @@ export const useStore = create<StoreState>()(
         try {
           await photoDB.addPhoto(photoData_db);
           
-          // Update the visit in the store after successful IndexedDB storage
+          // Only update the store after successful IndexedDB storage
           set((state) => ({
             visits: state.visits.map((visit) =>
               visit.id === visitId
