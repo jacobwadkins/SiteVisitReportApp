@@ -41,14 +41,14 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
 
   // Header: Title bar with company branding and date
   pdf.setFillColor(colors.navy.r, colors.navy.g, colors.navy.b);
-  pdf.rect(0, 0, pageWidth, 70, 'F');
+  pdf.rect(10, 10, pageWidth - 20, 50, 'F');
   pdf.setFontSize(20);
   pdf.setTextColor(255, 255, 255);
   pdf.setFont('Helvetica', 'bold');
-  pdf.text('Site Visit Report', margin, 45);
+  pdf.text('Site Visit Report', margin + 10, 40);
   pdf.setFontSize(10);
   pdf.setFont('Helvetica', 'bold');
-  pdf.text('Haskell', pageWidth - margin, 40, { align: 'right' });
+  pdf.text('Haskell', pageWidth - margin - 10, 35, { align: 'right' });
 
   // Placeholder for company logo (uncomment and add actual image if available)
   // pdf.addImage(logoSrc, 'PNG', margin, 20, 60, 40);
