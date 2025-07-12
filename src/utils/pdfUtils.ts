@@ -226,7 +226,7 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
     const photoHeight = 170; // 4:3 aspect ratio, increased by 15% from 155pt
     const photosPerPage = 6; // 2 columns × 3 rows
     const photosPerRow = 2;
-    const photoSpacing = 20; // Horizontal spacing between photos
+    const photoSpacing = 40; // Horizontal spacing between photos
     const rowSpacing = 228; // Photo (178) + caption (20) + notes (2 × 10 spacing) + 10pt margin
 
     for (let i = 0; i < visit.photos.length; i += photosPerPage) {
