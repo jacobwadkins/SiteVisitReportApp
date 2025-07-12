@@ -43,28 +43,67 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
     // Build document children array
     const documentChildren = [];
 
-    // Header: Title bar with company branding
+    // Header: Title bar with company branding (2-column table)
     documentChildren.push(
-      new Paragraph({
-        children: [
-          new TextRun({
-            text: 'Site Visit Report',
-            bold: true,
-            size: 44, // 22pt
-            color: 'FFFFFF'
-          }),
-          new TextRun({
-            text: '\t\t\t\t\t\t\t\t\t\tHaskell',
-            size: 20, // 10pt
-            color: 'FFFFFF'
+      new Table({
+        width: { size: 100, type: 'pct' },
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({
+                        text: 'Site Visit Report',
+                        bold: true,
+                        size: 44, // 22pt
+                        color: 'FFFFFF'
+                      })
+                    ],
+                    alignment: AlignmentType.LEFT
+                  })
+                ],
+                shading: {
+                  type: ShadingType.SOLID,
+                  color: colors.navy,
+                  fill: colors.navy
+                },
+                margins: { top: 200, bottom: 200, left: 200, right: 100 },
+                width: { size: 50, type: 'pct' }
+              }),
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({
+                        text: 'Haskell',
+                        size: 20, // 10pt
+                        color: 'FFFFFF'
+                      })
+                    ],
+                    alignment: AlignmentType.RIGHT
+                  })
+                ],
+                shading: {
+                  type: ShadingType.SOLID,
+                  color: colors.navy,
+                  fill: colors.navy
+                },
+                margins: { top: 200, bottom: 200, left: 100, right: 200 },
+                width: { size: 50, type: 'pct' }
+              })
+            ]
           })
         ],
-        shading: {
-          type: ShadingType.SOLID,
-          color: colors.navy,
-          fill: colors.navy
-        },
-        spacing: { after: 400 }
+        borders: {
+          top: { style: BorderStyle.NONE },
+          bottom: { style: BorderStyle.NONE },
+          left: { style: BorderStyle.NONE },
+          right: { style: BorderStyle.NONE },
+          insideHorizontal: { style: BorderStyle.NONE },
+          insideVertical: { style: BorderStyle.NONE },
+        }
       })
     );
 
