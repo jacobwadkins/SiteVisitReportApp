@@ -260,10 +260,6 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
         const yPos = yPosition + (row * rowSpacing);
 
         try {
-          // Add subtle border around photo
-          pdf.setDrawColor(colors.borderGray.r, colors.borderGray.g, colors.borderGray.b);
-          pdf.setLineWidth(0.5);
-          pdf.rect(xPos - 2, yPos - 2, photoWidth + 4, photoHeight + 4);
           pdf.addImage(photo.src, 'JPEG', xPos, yPos, photoWidth, photoHeight);
 
           // Photo caption
