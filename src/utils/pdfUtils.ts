@@ -45,7 +45,7 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
   pdf.setFontSize(20);
   pdf.setTextColor(255, 255, 255);
   pdf.setFont('Helvetica', 'bold');
-  pdf.text('Site Visit Report', margin, 35);
+  pdf.text('Site Visit Report', margin, 45);
   pdf.setFontSize(10);
   pdf.setFont('Helvetica', 'bold');
   pdf.text('Haskell', pageWidth - margin, 40, { align: 'right' });
