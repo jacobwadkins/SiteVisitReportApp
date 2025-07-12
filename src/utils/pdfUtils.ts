@@ -221,7 +221,7 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
     pdf.setFontSize(14);
     pdf.setTextColor(colors.navy.r, colors.navy.g, colors.navy.b);
     pdf.setFont('Helvetica', 'bold');
-    pdf.text('Site Photos', margin, yPosition);
+    pdf.text('Photos', margin, yPosition);
     pdf.setLineWidth(0.5);
     pdf.setDrawColor(colors.navy.r, colors.navy.g, colors.navy.b);
     pdf.line(margin, yPosition + 5, margin + contentWidth, yPosition + 5);
@@ -243,7 +243,7 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
         pdf.setFontSize(14);
         pdf.setTextColor(colors.navy.r, colors.navy.g, colors.navy.b);
         pdf.setFont('Helvetica', 'bold');
-        pdf.text('Site Photos (continued)', margin, yPosition);
+        pdf.text('Photos (continued)', margin, yPosition);
         pdf.setLineWidth(0.5);
         pdf.setDrawColor(colors.navy.r, colors.navy.g, colors.navy.b);
         pdf.line(margin, yPosition + 5, margin + contentWidth, yPosition + 5);
