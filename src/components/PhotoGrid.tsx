@@ -42,7 +42,29 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
     };
     
     loadPhotoSources();
-  }, [visitId, visit?.photos.length]);
+  }, [visitId, visit?.photos.length, visit?.photos]);
+
+  // Also reload when photos array changes (not just length)
+  useEffect(() => {
+    const loadPhotoSources = async () => {
+      if (!visit?.photos.length) return;
+      
+      try {
+        const photoData = await photoDB.getPhotosByVisitId(visitId);
+        const sources: Record<string, string> = {};
+        photoData.forEach(photo => {
+          sources[photo.id] = photo.src;
+        });
+        setPhotoSources(sources);
+      } catch (error) {
+        console.error('Failed to load photo sources:', error);
+        // Fallback: clear photo sources if loading fails
+        setPhotoSources({});
+      }
+    };
+    
+    loadPhotoSources();
+  }, [visit?.photos.map(p => p.id).join(','), visitId]);
 
   const {
     register,

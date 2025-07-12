@@ -101,22 +101,23 @@ export const useStore = create<StoreState>()(
         
         try {
           await photoDB.addPhoto(photoData_db);
+          
+          // Update the visit in the store after successful IndexedDB storage
+          set((state) => ({
+            visits: state.visits.map((visit) =>
+              visit.id === visitId
+                ? {
+                    ...visit,
+                    photos: [...visit.photos, photo],
+                    updatedAt: now,
+                  }
+                : visit
+            ),
+          }));
         } catch (error) {
           console.error('Failed to store photo in IndexedDB:', error);
           throw error;
         }
-        
-        set((state) => ({
-          visits: state.visits.map((visit) =>
-            visit.id === visitId
-              ? {
-                  ...visit,
-                  photos: [...visit.photos, photo],
-                  updatedAt: now,
-                }
-              : visit
-          ),
-        }));
       },
       
       updatePhoto: async (visitId, photoId, updates) => {
