@@ -270,30 +270,12 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
                 ) : (
                   <div>
                     <div className="mb-4">
-                      {photo.description ? (
-                        <p className="font-semibold text-gray-900 dark:text-white">
-                          {photo.description}
-                        </p>
-                      ) : (
-                        <p 
-                          className="font-semibold text-blue-600 dark:text-blue-400 cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-                          onClick={() => startEditing(photo.id, photo)}
-                        >
-                          No description
-                        </p>
-                      )}
-                      {photo.notes ? (
-                        <p className="text-gray-600 dark:text-gray-300 mt-1">
-                          {photo.notes}
-                        </p>
-                      ) : (
-                        <p 
-                          className="text-blue-600 dark:text-blue-400 mt-1 cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-                          onClick={() => startEditing(photo.id, photo)}
-                        >
-                          No notes
-                        </p>
-                      )}
+                      <p className="font-semibold text-gray-900 dark:text-white">
+                        {photo.description || 'No description'}
+                      </p>
+                      <p className="text-gray-600 dark:text-gray-300 mt-1">
+                        {photo.notes || 'No notes'}
+                      </p>
                     </div>
                     
                     <div className="flex space-x-2">
