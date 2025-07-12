@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import { Visit } from '../types';
+import { photoDB } from './indexedDB';
 
 // Add Roboto font (ensure jsPDF is configured with Roboto or use a CDN with custom fonts)
 const addRobotoFont = (pdf: jsPDF) => {
@@ -16,6 +17,13 @@ const addRobotoFont = (pdf: jsPDF) => {
 };
 
 export const generatePDF = async (visit: Visit): Promise<void> => {
+  // Load photo sources from IndexedDB
+  const photoData = await photoDB.getPhotosByVisitId(visit.id);
+  const photoSources: Record<string, string> = {};
+  photoData.forEach(photo => {
+    photoSources[photo.id] = photo.src;
+  });
+
   // Create PDF with 8.5" x 11" dimensions (612 x 792 points)
   const pdf = new jsPDF({
     orientation: 'portrait',
@@ -265,7 +273,12 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
         const yPos = yPosition + (row * rowSpacing);
 
         try {
-          pdf.addImage(photo.src, 'JPEG', xPos, yPos, photoWidth, photoHeight);
+          const photoSrc = photoSources[photo.id];
+          if (photoSrc) {
+            pdf.addImage(photoSrc, 'JPEG', xPos, yPos, photoWidth, photoHeight);
+          } else {
+            throw new Error('Photo source not found');
+          }
 
           // Photo caption
           pdf.setFillColor(colors.navy.r, colors.navy.g, colors.navy.b);

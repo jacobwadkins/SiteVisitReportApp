@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Visit, Photo, Theme } from '../types';
+import { photoDB, PhotoData } from '../utils/indexedDB';
 
 interface StoreState {
   // State
@@ -16,9 +17,10 @@ interface StoreState {
   setCurrentVisit: (id: string | null) => void;
   
   // Photo actions
-  addPhoto: (visitId: string, photo: Omit<Photo, 'id' | 'createdAt'>) => void;
-  updatePhoto: (visitId: string, photoId: string, updates: Partial<Photo>) => void;
-  deletePhoto: (visitId: string, photoId: string) => void;
+  addPhoto: (visitId: string, photo: Omit<Photo, 'id' | 'createdAt'>, src: string) => Promise<void>;
+  updatePhoto: (visitId: string, photoId: string, updates: Partial<Photo>) => Promise<void>;
+  deletePhoto: (visitId: string, photoId: string) => Promise<void>;
+  loadPhotos: (visitId: string) => Promise<Photo[]>;
   
   // App actions
   setTheme: (theme: Theme) => void;
@@ -64,6 +66,11 @@ export const useStore = create<StoreState>()(
       },
       
       deleteVisit: (id) => {
+        // Delete photos from IndexedDB when visit is deleted
+        photoDB.deletePhotosByVisitId(id).catch(error => {
+          console.error('Failed to delete photos from IndexedDB:', error);
+        });
+        
         set((state) => ({
           visits: state.visits.filter((visit) => visit.id !== id),
           currentVisitId: state.currentVisitId === id ? null : state.currentVisitId,
@@ -75,13 +82,29 @@ export const useStore = create<StoreState>()(
       },
       
       // Photo actions
-      addPhoto: (visitId, photoData) => {
+      addPhoto: async (visitId, photoData, src) => {
         const photoId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+        const now = new Date().toISOString();
+        
         const photo: Photo = {
           ...photoData,
           id: photoId,
-          createdAt: new Date().toISOString(),
+          createdAt: now,
         };
+        
+        // Store photo data in IndexedDB
+        const photoData_db: PhotoData = {
+          ...photo,
+          visitId,
+          src,
+        };
+        
+        try {
+          await photoDB.addPhoto(photoData_db);
+        } catch (error) {
+          console.error('Failed to store photo in IndexedDB:', error);
+          throw error;
+        }
         
         set((state) => ({
           visits: state.visits.map((visit) =>
@@ -89,14 +112,21 @@ export const useStore = create<StoreState>()(
               ? {
                   ...visit,
                   photos: [...visit.photos, photo],
-                  updatedAt: new Date().toISOString(),
+                  updatedAt: now,
                 }
               : visit
           ),
         }));
       },
       
-      updatePhoto: (visitId, photoId, updates) => {
+      updatePhoto: async (visitId, photoId, updates) => {
+        try {
+          await photoDB.updatePhoto(photoId, updates);
+        } catch (error) {
+          console.error('Failed to update photo in IndexedDB:', error);
+          throw error;
+        }
+        
         set((state) => ({
           visits: state.visits.map((visit) =>
             visit.id === visitId
@@ -112,7 +142,14 @@ export const useStore = create<StoreState>()(
         }));
       },
       
-      deletePhoto: (visitId, photoId) => {
+      deletePhoto: async (visitId, photoId) => {
+        try {
+          await photoDB.deletePhoto(photoId);
+        } catch (error) {
+          console.error('Failed to delete photo from IndexedDB:', error);
+          throw error;
+        }
+        
         set((state) => ({
           visits: state.visits.map((visit) =>
             visit.id === visitId
@@ -124,6 +161,16 @@ export const useStore = create<StoreState>()(
               : visit
           ),
         }));
+      },
+      
+      loadPhotos: async (visitId) => {
+        try {
+          const photoData = await photoDB.getPhotosByVisitId(visitId);
+          return photoData.map(({ src, visitId: _, ...photo }) => photo);
+        } catch (error) {
+          console.error('Failed to load photos from IndexedDB:', error);
+          return [];
+        }
       },
       
       // App actions

@@ -6,6 +6,7 @@ import { useStore } from '../store/useStore';
 import { photoSchema, PhotoFormData } from '../utils/validation';
 import { compressImage, validateImageFile } from '../utils/imageUtils';
 import { useHapticFeedback } from '../hooks/useHapticFeedback';
+import { photoDB } from '../utils/indexedDB';
 
 interface PhotoGridProps {
   visitId: string;
@@ -14,6 +15,7 @@ interface PhotoGridProps {
 export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
   const [editingPhotoId, setEditingPhotoId] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [photoSources, setPhotoSources] = useState<Record<string, string>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const visit = useStore((state) => state.visits.find((v) => v.id === visitId));
@@ -21,6 +23,26 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
   const updatePhoto = useStore((state) => state.updatePhoto);
   const deletePhoto = useStore((state) => state.deletePhoto);
   const triggerHaptic = useHapticFeedback();
+
+  // Load photo sources from IndexedDB when component mounts or visit changes
+  useEffect(() => {
+    const loadPhotoSources = async () => {
+      if (!visit) return;
+      
+      try {
+        const photoData = await photoDB.getPhotosByVisitId(visitId);
+        const sources: Record<string, string> = {};
+        photoData.forEach(photo => {
+          sources[photo.id] = photo.src;
+        });
+        setPhotoSources(sources);
+      } catch (error) {
+        console.error('Failed to load photo sources:', error);
+      }
+    };
+    
+    loadPhotoSources();
+  }, [visitId, visit?.photos.length]);
 
   const {
     register,
@@ -46,11 +68,10 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
 
       try {
         const compressedImage = await compressImage(file);
-        addPhoto(visitId, {
-          src: compressedImage,
+        await addPhoto(visitId, {
           description: '',
           notes: '',
-        });
+        }, compressedImage);
       } catch (error) {
         console.error('Error processing image:', error);
         alert('Failed to process image. Please try again.');
@@ -83,7 +104,10 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
 
   const savePhoto = (data: PhotoFormData) => {
     if (editingPhotoId) {
-      updatePhoto(visitId, editingPhotoId, data);
+      updatePhoto(visitId, editingPhotoId, data).catch(error => {
+        console.error('Failed to update photo:', error);
+        alert('Failed to update photo. Please try again.');
+      });
       setEditingPhotoId(null);
       triggerHaptic('medium');
     }
@@ -92,7 +116,10 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
   const handleDeletePhoto = (photoId: string) => {
     triggerHaptic('medium');
     if (window.confirm('Are you sure you want to delete this photo?')) {
-      deletePhoto(visitId, photoId);
+      deletePhoto(visitId, photoId).catch(error => {
+        console.error('Failed to delete photo:', error);
+        alert('Failed to delete photo. Please try again.');
+      });
     }
   };
 
@@ -136,11 +163,17 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
                 Photo {index + 1}
               </div>
               
-              <img
-                src={photo.src}
-                alt={photo.description || `Site photo ${index + 1}`}
-                className="w-full h-64 object-cover"
-              />
+              {photoSources[photo.id] ? (
+                <img
+                  src={photoSources[photo.id]}
+                  alt={photo.description || `Site photo ${index + 1}`}
+                  className="w-full h-64 object-cover"
+                />
+              ) : (
+                <div className="w-full h-64 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                  <span className="text-gray-500 dark:text-gray-400">Loading photo...</span>
+                </div>
+              )}
               
               <div className="p-4">
                 {editingPhotoId === photo.id ? (

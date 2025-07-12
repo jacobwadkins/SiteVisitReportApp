@@ -1,9 +1,17 @@
 import { Document, Packer, Paragraph, TextRun, Table, TableCell, TableRow, ImageRun, BorderStyle, AlignmentType, Footer, PageNumber, ShadingType, LevelFormat } from 'docx';
 import { saveAs } from 'file-saver';
 import { Visit } from '../types';
+import { photoDB } from './indexedDB';
 
 export const generateDOCX = async (visit: Visit): Promise<void> => {
   try {
+    // Load photo sources from IndexedDB
+    const photoData = await photoDB.getPhotosByVisitId(visit.id);
+    const photoSources: Record<string, string> = {};
+    photoData.forEach(photo => {
+      photoSources[photo.id] = photo.src;
+    });
+
     // Constants for styling (matching PDF)
     const colors = {
       navy: '172554',
@@ -443,7 +451,11 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
           // Left photo cell
           if (leftPhoto) {
             try {
-              const base64Data = leftPhoto.src.split(',')[1];
+              const photoSrc = photoSources[leftPhoto.id];
+              if (!photoSrc) {
+                throw new Error('Photo source not found');
+              }
+              const base64Data = photoSrc.split(',')[1];
               const binaryString = atob(base64Data);
               const bytes = new Uint8Array(binaryString.length);
               for (let i = 0; i < binaryString.length; i++) {
@@ -512,7 +524,11 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
           // Right photo cell
           if (rightPhoto) {
             try {
-              const base64Data = rightPhoto.src.split(',')[1];
+              const photoSrc = photoSources[rightPhoto.id];
+              if (!photoSrc) {
+                throw new Error('Photo source not found');
+              }
+              const base64Data = photoSrc.split(',')[1];
               const binaryString = atob(base64Data);
               const bytes = new Uint8Array(binaryString.length);
               for (let i = 0; i < binaryString.length; i++) {

@@ -15,7 +15,6 @@ export interface Visit {
 
 export interface Photo {
   id: string;
-  src: string; // base64 data URL
   description: string;
   notes: string;
   createdAt: string;
