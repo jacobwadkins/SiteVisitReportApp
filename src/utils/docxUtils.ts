@@ -426,7 +426,13 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                           })() : new Paragraph({ text: '' })
                         ],
                         margins: { top: 100, bottom: 100, left: 100, right: 100 },
-                        width: { size: 50, type: 'pct' }
+                        width: { size: 47.5, type: 'pct' }
+                      }),
+                      // Center spacing column (0.5" wide)
+                      new TableCell({
+                        children: [new Paragraph({ text: '' })],
+                        margins: { top: 0, bottom: 0, left: 0, right: 0 },
+                        width: { size: 720, type: 'dxa' } // 0.5" = 720 twips
                       }),
                       new TableCell({
                         children: [
@@ -465,7 +471,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                           })() : new Paragraph({ text: '' })
                         ],
                         margins: { top: 100, bottom: 100, left: 100, right: 100 },
-                        width: { size: 50, type: 'pct' }
+                        width: { size: 47.5, type: 'pct' }
                       })
                     ]
                   });
@@ -495,7 +501,13 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                           fill: colors.navy 
                         } : undefined,
                         margins: { top: 100, bottom: 100, left: 100, right: 100 },
-                        width: { size: 50, type: 'pct' }
+                        width: { size: 47.5, type: 'pct' }
+                      }),
+                      // Center spacing column
+                      new TableCell({
+                        children: [new Paragraph({ text: '' })],
+                        margins: { top: 0, bottom: 0, left: 0, right: 0 },
+                        width: { size: 720, type: 'dxa' }
                       }),
                       new TableCell({
                         children: [
@@ -519,7 +531,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                           fill: colors.navy 
                         } : undefined,
                         margins: { top: 100, bottom: 100, left: 100, right: 100 },
-                        width: { size: 50, type: 'pct' }
+                        width: { size: 47.5, type: 'pct' }
                       })
                     ]
                   });
@@ -541,7 +553,13 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                           })
                         ],
                         margins: { top: 100, bottom: 100, left: 100, right: 100 },
-                        width: { size: 50, type: 'pct' }
+                        width: { size: 47.5, type: 'pct' }
+                      }),
+                      // Center spacing column
+                      new TableCell({
+                        children: [new Paragraph({ text: '' })],
+                        margins: { top: 0, bottom: 0, left: 0, right: 0 },
+                        width: { size: 720, type: 'dxa' }
                       }),
                       new TableCell({
                         children: [
@@ -557,7 +575,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                           })
                         ],
                         margins: { top: 100, bottom: 100, left: 100, right: 100 },
-                        width: { size: 50, type: 'pct' }
+                        width: { size: 47.5, type: 'pct' }
                       })
                     ]
                   });
@@ -568,12 +586,18 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                       new TableCell({
                         children: [new Paragraph({ text: '' })],
                         margins: { top: 100, bottom: 240, left: 100, right: 100 }, // 12pt bottom margin
-                        width: { size: 50, type: 'pct' }
+                        width: { size: 47.5, type: 'pct' }
+                      }),
+                      // Center spacing column
+                      new TableCell({
+                        children: [new Paragraph({ text: '' })],
+                        margins: { top: 0, bottom: 0, left: 0, right: 0 },
+                        width: { size: 720, type: 'dxa' }
                       }),
                       new TableCell({
                         children: [new Paragraph({ text: '' })],
                         margins: { top: 100, bottom: 240, left: 100, right: 100 }, // 12pt bottom margin
-                        width: { size: 50, type: 'pct' }
+                        width: { size: 47.5, type: 'pct' }
                       })
                     ]
                   });
@@ -582,7 +606,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                   tableRows.push(photoRow, captionRow, notesRow, spacingRow);
                 }
                 
-                // Create the table with all 12 rows
+                // Create the table with all 12 rows and 3 columns
                 photoTables.push(
                   new Table({
                     width: { size: 100, type: 'pct' },
