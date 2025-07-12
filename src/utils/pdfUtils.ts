@@ -222,7 +222,7 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
   }
 
   // Photos Section
-  if (visit.photos && visit.photos.length > 0) {
+  if (photoData && photoData.length > 0) {
     pdf.addPage();
     let yPosition = 60;
 
@@ -242,7 +242,7 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
     const photoSpacing = 60; // Horizontal spacing between photos
     const rowSpacing = 228; // Photo (178) + caption (20) + notes (2 × 10 spacing) + 10pt margin
 
-    for (let i = 0; i < visit.photos.length; i += photosPerPage) {
+    for (let i = 0; i < photoData.length; i += photosPerPage) {
       if (i > 0) {
         pdf.addPage();
         yPosition = 60;
@@ -259,11 +259,11 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
       }
 
       // Process up to 6 photos on this page
-      const photosOnThisPage = Math.min(photosPerPage, visit.photos.length - i);
+      const photosOnThisPage = Math.min(photosPerPage, photoData.length - i);
 
       for (let j = 0; j < photosOnThisPage; j++) {
         const photoIndex = i + j;
-        const photo = visit.photos[photoIndex];
+        const photo = photoData[photoIndex];
 
         // Calculate position: 2 photos per row, 3 rows per page
         const row = Math.floor(j / photosPerRow); // 0, 1, or 2
@@ -273,9 +273,8 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
         const yPos = yPosition + (row * rowSpacing);
 
         try {
-          const photoSrc = photoSources[photo.id];
-          if (photoSrc) {
-            pdf.addImage(photoSrc, 'JPEG', xPos, yPos, photoWidth, photoHeight);
+          if (photo.src) {
+            pdf.addImage(photo.src, 'JPEG', xPos, yPos, photoWidth, photoHeight);
           } else {
             throw new Error('Photo source not found');
           }

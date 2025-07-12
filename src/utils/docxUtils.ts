@@ -379,7 +379,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
     }
 
     // Photos Section
-    if (visit.photos && visit.photos.length > 0) {
+    if (photoData && photoData.length > 0) {
       // Add page break and photos header
       documentChildren.push(
         new Paragraph({
@@ -405,7 +405,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
       );
 
       const photosPerPage = 6;
-      const totalPages = Math.ceil(visit.photos.length / photosPerPage);
+      const totalPages = Math.ceil(photoData.length / photosPerPage);
 
       for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
         const startIndex = pageIndex * photosPerPage;
@@ -442,8 +442,8 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
         for (let rowGroup = 0; rowGroup < 3; rowGroup++) {
           const leftPhotoIndex = startIndex + (rowGroup * 2);
           const rightPhotoIndex = startIndex + (rowGroup * 2) + 1;
-          const leftPhoto = leftPhotoIndex < visit.photos.length ? visit.photos[leftPhotoIndex] : null;
-          const rightPhoto = rightPhotoIndex < visit.photos.length ? visit.photos[rightPhotoIndex] : null;
+          const leftPhoto = leftPhotoIndex < photoData.length ? photoData[leftPhotoIndex] : null;
+          const rightPhoto = rightPhotoIndex < photoData.length ? photoData[rightPhotoIndex] : null;
 
           // Row 1, 5, 9: Photos
           const photoRowCells = [];
@@ -451,11 +451,10 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
           // Left photo cell
           if (leftPhoto) {
             try {
-              const photoSrc = photoSources[leftPhoto.id];
-              if (!photoSrc) {
+              if (!leftPhoto.src) {
                 throw new Error('Photo source not found');
               }
-              const base64Data = photoSrc.split(',')[1];
+              const base64Data = leftPhoto.src.split(',')[1];
               const binaryString = atob(base64Data);
               const bytes = new Uint8Array(binaryString.length);
               for (let i = 0; i < binaryString.length; i++) {
@@ -524,11 +523,10 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
           // Right photo cell
           if (rightPhoto) {
             try {
-              const photoSrc = photoSources[rightPhoto.id];
-              if (!photoSrc) {
+              if (!rightPhoto.src) {
                 throw new Error('Photo source not found');
               }
-              const base64Data = photoSrc.split(',')[1];
+              const base64Data = rightPhoto.src.split(',')[1];
               const binaryString = atob(base64Data);
               const bytes = new Uint8Array(binaryString.length);
               for (let i = 0; i < binaryString.length; i++) {
