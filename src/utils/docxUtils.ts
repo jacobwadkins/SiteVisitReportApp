@@ -454,8 +454,8 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                         new ImageRun({
                           data: bytes,
                           transformation: {
-                            width: 307, // 230pt * 1.33
-                            height: 230 // 172pt * 1.33
+                            width: 276, // 207pt * 1.33 (10% reduction)
+                            height: 207 // 155pt * 1.33 (10% reduction)
                           }
                         })
                       ],
@@ -523,8 +523,8 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                         new ImageRun({
                           data: bytes,
                           transformation: {
-                            width: 307, // 230pt * 1.33
-                            height: 230 // 172pt * 1.33
+                            width: 276, // 207pt * 1.33 (10% reduction)
+                            height: 207 // 155pt * 1.33 (10% reduction)
                           }
                         })
                       ],
