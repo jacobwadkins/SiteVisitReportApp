@@ -342,88 +342,265 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                 }
               }
             }),
-            // Individual photos with captions and notes
-            ...visit.photos.map((photo, index) => {
-              const label = photo.description 
-                ? `Photo ${index + 1}: ${photo.description.substring(0, 35)}${photo.description.length > 35 ? '...' : ''}`
-                : `Photo ${index + 1}`;
-
-              const elements = [];
-
-              try {
-                const base64Data = photo.src.split(',')[1];
-                const binaryString = atob(base64Data);
-                const bytes = new Uint8Array(binaryString.length);
-                for (let i = 0; i < binaryString.length; i++) {
-                  bytes[i] = binaryString.charCodeAt(i);
-                }
-
-                // Photo
-                elements.push(new Paragraph({
-                  children: [
-                    new ImageRun({
-                      data: bytes,
-                      transformation: {
-                        width: 460, // 230pt * 2
-                        height: 344  // 172pt * 2
+            // Create photo tables - 6 photos per page in 2x12 table structure
+            ...(() => {
+              const photoTables = [];
+              const photosPerPage = 6;
+              
+              for (let pageIndex = 0; pageIndex < Math.ceil(visit.photos.length / photosPerPage); pageIndex++) {
+                const startIndex = pageIndex * photosPerPage;
+                const photosOnPage = visit.photos.slice(startIndex, startIndex + photosPerPage);
+                
+                // Add page header for subsequent photo pages
+                if (pageIndex > 0) {
+                  photoTables.push(
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: 'Site Photos (continued)',
+                          bold: true,
+                          size: 28,
+                          color: colors.navy
+                        })
+                      ],
+                      spacing: { after: 500 },
+                      pageBreakBefore: true,
+                      border: {
+                        bottom: {
+                          color: colors.navy,
+                          space: 1,
+                          style: BorderStyle.SINGLE,
+                          size: 6,
+                        }
                       }
                     })
-                  ],
-                  spacing: { after: 0 },
-                  alignment: AlignmentType.CENTER
-                }));
-
-                // Caption with navy background
-                elements.push(new Paragraph({
-                  children: [
-                    new TextRun({
-                      text: label,
-                      color: 'FFFFFF',
-                      size: 20,
-                      bold: true
-                    })
-                  ],
-                  shading: { 
-                    type: ShadingType.SOLID, 
-                    color: colors.navy, 
-                    fill: colors.navy 
-                  },
-                  spacing: { after: photo.notes ? 100 : 400 },
-                  alignment: AlignmentType.CENTER
-                }));
-
-                // Notes if present
-                if (photo.notes) {
-                  elements.push(new Paragraph({
-                    children: [
-                      new TextRun({
-                        text: photo.notes.split('\n').slice(0, 2).join(' '),
-                        size: 18,
-                        color: colors.textGray
-                      })
-                    ],
-                    spacing: { after: 400 },
-                    alignment: AlignmentType.CENTER
-                  }));
+                  );
                 }
-
-              } catch (error) {
-                console.error(`Error processing photo ${index + 1} for DOCX:`, error);
-                elements.push(new Paragraph({
-                  children: [
-                    new TextRun({
-                      text: `[Photo ${index + 1} failed to load]`,
-                      size: 20,
-                      color: colors.textGray
-                    })
-                  ],
-                  spacing: { after: 400 },
-                  alignment: AlignmentType.CENTER
-                }));
+                
+                // Create 2x12 table for this page
+                const tableRows = [];
+                
+                for (let rowGroup = 0; rowGroup < 3; rowGroup++) { // 3 groups of 4 rows each
+                  const leftPhotoIndex = startIndex + (rowGroup * 2);
+                  const rightPhotoIndex = startIndex + (rowGroup * 2) + 1;
+                  const leftPhoto = leftPhotoIndex < visit.photos.length ? visit.photos[leftPhotoIndex] : null;
+                  const rightPhoto = rightPhotoIndex < visit.photos.length ? visit.photos[rightPhotoIndex] : null;
+                  
+                  // Row 1, 5, 9: Photos
+                  const photoRow = new TableRow({
+                    children: [
+                      new TableCell({
+                        children: [
+                          leftPhoto ? (() => {
+                            try {
+                              const base64Data = leftPhoto.src.split(',')[1];
+                              const binaryString = atob(base64Data);
+                              const bytes = new Uint8Array(binaryString.length);
+                              for (let i = 0; i < binaryString.length; i++) {
+                                bytes[i] = binaryString.charCodeAt(i);
+                              }
+                              return new Paragraph({
+                                children: [
+                                  new ImageRun({
+                                    data: bytes,
+                                    transformation: {
+                                      width: 230 * 1.33, // 230pt converted to EMU
+                                      height: 172 * 1.33  // 172pt converted to EMU
+                                    }
+                                  })
+                                ],
+                                alignment: AlignmentType.CENTER
+                              });
+                            } catch (error) {
+                              return new Paragraph({
+                                children: [
+                                  new TextRun({
+                                    text: `[Photo ${leftPhotoIndex + 1} failed to load]`,
+                                    size: 20,
+                                    color: colors.textGray
+                                  })
+                                ],
+                                alignment: AlignmentType.CENTER
+                              });
+                            }
+                          })() : new Paragraph({ text: '' })
+                        ],
+                        margins: { top: 100, bottom: 100, left: 100, right: 100 },
+                        width: { size: 50, type: 'pct' }
+                      }),
+                      new TableCell({
+                        children: [
+                          rightPhoto ? (() => {
+                            try {
+                              const base64Data = rightPhoto.src.split(',')[1];
+                              const binaryString = atob(base64Data);
+                              const bytes = new Uint8Array(binaryString.length);
+                              for (let i = 0; i < binaryString.length; i++) {
+                                bytes[i] = binaryString.charCodeAt(i);
+                              }
+                              return new Paragraph({
+                                children: [
+                                  new ImageRun({
+                                    data: bytes,
+                                    transformation: {
+                                      width: 230 * 1.33, // 230pt converted to EMU
+                                      height: 172 * 1.33  // 172pt converted to EMU
+                                    }
+                                  })
+                                ],
+                                alignment: AlignmentType.CENTER
+                              });
+                            } catch (error) {
+                              return new Paragraph({
+                                children: [
+                                  new TextRun({
+                                    text: `[Photo ${rightPhotoIndex + 1} failed to load]`,
+                                    size: 20,
+                                    color: colors.textGray
+                                  })
+                                ],
+                                alignment: AlignmentType.CENTER
+                              });
+                            }
+                          })() : new Paragraph({ text: '' })
+                        ],
+                        margins: { top: 100, bottom: 100, left: 100, right: 100 },
+                        width: { size: 50, type: 'pct' }
+                      })
+                    ]
+                  });
+                  
+                  // Row 2, 6, 10: Captions with navy background
+                  const captionRow = new TableRow({
+                    children: [
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: leftPhoto ? (leftPhoto.description 
+                                  ? `Photo ${leftPhotoIndex + 1}: ${leftPhoto.description.substring(0, 35)}${leftPhoto.description.length > 35 ? '...' : ''}`
+                                  : `Photo ${leftPhotoIndex + 1}`) : '',
+                                color: 'FFFFFF',
+                                size: 20,
+                                bold: true
+                              })
+                            ],
+                            alignment: AlignmentType.CENTER
+                          })
+                        ],
+                        shading: leftPhoto ? { 
+                          type: ShadingType.SOLID, 
+                          color: colors.navy, 
+                          fill: colors.navy 
+                        } : undefined,
+                        margins: { top: 100, bottom: 100, left: 100, right: 100 },
+                        width: { size: 50, type: 'pct' }
+                      }),
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: rightPhoto ? (rightPhoto.description 
+                                  ? `Photo ${rightPhotoIndex + 1}: ${rightPhoto.description.substring(0, 35)}${rightPhoto.description.length > 35 ? '...' : ''}`
+                                  : `Photo ${rightPhotoIndex + 1}`) : '',
+                                color: 'FFFFFF',
+                                size: 20,
+                                bold: true
+                              })
+                            ],
+                            alignment: AlignmentType.CENTER
+                          })
+                        ],
+                        shading: rightPhoto ? { 
+                          type: ShadingType.SOLID, 
+                          color: colors.navy, 
+                          fill: colors.navy 
+                        } : undefined,
+                        margins: { top: 100, bottom: 100, left: 100, right: 100 },
+                        width: { size: 50, type: 'pct' }
+                      })
+                    ]
+                  });
+                  
+                  // Row 3, 7, 11: Notes in gray text
+                  const notesRow = new TableRow({
+                    children: [
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: leftPhoto?.notes ? leftPhoto.notes.split('\n').slice(0, 2).join(' ') : '',
+                                size: 18,
+                                color: colors.textGray
+                              })
+                            ],
+                            alignment: AlignmentType.CENTER
+                          })
+                        ],
+                        margins: { top: 100, bottom: 100, left: 100, right: 100 },
+                        width: { size: 50, type: 'pct' }
+                      }),
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: rightPhoto?.notes ? rightPhoto.notes.split('\n').slice(0, 2).join(' ') : '',
+                                size: 18,
+                                color: colors.textGray
+                              })
+                            ],
+                            alignment: AlignmentType.CENTER
+                          })
+                        ],
+                        margins: { top: 100, bottom: 100, left: 100, right: 100 },
+                        width: { size: 50, type: 'pct' }
+                      })
+                    ]
+                  });
+                  
+                  // Row 4, 8, 12: Blank spacing rows
+                  const spacingRow = new TableRow({
+                    children: [
+                      new TableCell({
+                        children: [new Paragraph({ text: '' })],
+                        margins: { top: 100, bottom: 240, left: 100, right: 100 }, // 12pt bottom margin
+                        width: { size: 50, type: 'pct' }
+                      }),
+                      new TableCell({
+                        children: [new Paragraph({ text: '' })],
+                        margins: { top: 100, bottom: 240, left: 100, right: 100 }, // 12pt bottom margin
+                        width: { size: 50, type: 'pct' }
+                      })
+                    ]
+                  });
+                  
+                  // Add all 4 rows for this group
+                  tableRows.push(photoRow, captionRow, notesRow, spacingRow);
+                }
+                
+                // Create the table with all 12 rows
+                photoTables.push(
+                  new Table({
+                    width: { size: 100, type: 'pct' },
+                    rows: tableRows,
+                    borders: {
+                      top: { style: BorderStyle.NONE },
+                      bottom: { style: BorderStyle.NONE },
+                      left: { style: BorderStyle.NONE },
+                      right: { style: BorderStyle.NONE },
+                      insideHorizontal: { style: BorderStyle.NONE },
+                      insideVertical: { style: BorderStyle.NONE },
+                    }
+                  })
+                );
               }
-
-              return elements;
-            }).flat()
+              
+              return photoTables;
+            })()
           ] : [])
         ]
       }]
