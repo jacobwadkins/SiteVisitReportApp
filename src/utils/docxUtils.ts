@@ -302,16 +302,18 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
       observationLines.forEach((line, index) => {
         const cleanLine = line.replace(/^[\t\s]+/, '');
         const isTabbed = tabbedObservations[index];
-        const displayNumber = getDisplayNumber(index, isTabbed, tabbedObservations);
         
         documentChildren.push(
           new Paragraph({
             children: [
-              new TextRun({ text: `${displayNumber}${isTabbed ? '' : '.'} `, size: 22 }),
               new TextRun({ text: cleanLine, size: 22 })
             ],
             spacing: { after: 100 },
-            indent: { left: isTabbed ? 600 : 200 }
+            indent: { left: isTabbed ? 600 : 200 },
+            numbering: isTabbed ? undefined : {
+              reference: 'observations-numbering',
+              level: 0
+            }
           })
         );
       });
@@ -349,16 +351,18 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
       followupLines.forEach((line, index) => {
         const cleanLine = line.replace(/^[\t\s]+/, '');
         const isTabbed = tabbedFollowups[index];
-        const displayLetter = getDisplayLetter(index, isTabbed, tabbedFollowups);
         
         documentChildren.push(
           new Paragraph({
             children: [
-              new TextRun({ text: `${displayLetter}${isTabbed ? '' : '.'} `, size: 22 }),
               new TextRun({ text: cleanLine, size: 22 })
             ],
             spacing: { after: 100 },
-            indent: { left: isTabbed ? 600 : 200 }
+            indent: { left: isTabbed ? 600 : 200 },
+            numbering: isTabbed ? undefined : {
+              reference: 'recommendations-numbering',
+              level: 0
+            }
           })
         );
       });
