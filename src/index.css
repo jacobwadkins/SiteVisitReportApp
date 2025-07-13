@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Force remove resize grips from all textareas */
+textarea {
+  resize: none !important;
+}
