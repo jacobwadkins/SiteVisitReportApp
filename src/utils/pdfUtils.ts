@@ -352,9 +352,10 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
   }
 
   // Save PDF with sanitized file name
+  const safeClientName = visit.clientName.replace(/[^a-zA-Z0-9-_]/g, '');
   const safeSiteName = visit.siteName.replace(/[^a-zA-Z0-9-_]/g, '');
   const safeDate = new Date(visit.visitDate).toISOString().split('T')[0].replace(/-/g, '');
-  const fileName = `Site_Visit_Report_${safeSiteName}_${safeDate}.pdf`;
+  const fileName = `SiteVisitReport_${safeClientName}_${safeSiteName}_${safeDate}.pdf`;
   try {
     pdf.save(fileName);
   } catch (error) {

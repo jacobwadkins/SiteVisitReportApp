@@ -867,9 +867,10 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
     });
 
     const blob = await Packer.toBlob(doc);
+    const safeClientName = visit.clientName.replace(/[^a-zA-Z0-9-_]/g, '');
     const safeSiteName = visit.siteName.replace(/[^a-zA-Z0-9-_]/g, '');
     const safeDate = new Date(visit.visitDate).toISOString().split('T')[0].replace(/-/g, '');
-    const fileName = `Site_Visit_Report_${safeSiteName}_${safeDate}.docx`;
+    const fileName = `SiteVisitReport_${safeClientName}_${safeSiteName}_${safeDate}.docx`;
     saveAs(blob, fileName);
   } catch (error) {
     console.error('Error generating DOCX:', error);
