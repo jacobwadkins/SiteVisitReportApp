@@ -713,7 +713,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                         ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' 
                         : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
                     }`}>
-                      {getDisplayNumber(index, tabbedObservations[index], tabbedObservations)}.
+                      {getDisplayNumber(index, tabbedObservations[index], tabbedObservations)}{tabbedObservations[index] ? '' : '.'}
                     </div>
                     <button
                       onClick={() => toggleObservationTab(index)}
@@ -793,7 +793,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                           ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' 
                           : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
                       }`}>
-                        {getDisplayLetter(index, tabbedFollowups[index], tabbedFollowups)}.
+                        {getDisplayLetter(index, tabbedFollowups[index], tabbedFollowups)}{tabbedFollowups[index] ? '' : '.'}
                       </div>
                       <button
                         onClick={() => toggleFollowupTab(index)}
