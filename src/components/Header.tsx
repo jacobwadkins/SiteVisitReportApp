@@ -32,13 +32,22 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center space-x-3">
           {showBack ? (
-            <button
-              onClick={onBack}
-              className="flex items-center justify-center w-10 h-10 rounded-lg bg-white/20 hover:bg-white/30 transition-colors touch-manipulation"
-              aria-label="Go back"
-            >
-              <ArrowLeft size={20} />
-            </button>
+            <>
+              <button
+                onClick={onBack}
+                className="flex items-center justify-center w-10 h-10 rounded-lg bg-white/20 hover:bg-white/30 transition-colors touch-manipulation"
+                aria-label="Go back"
+              >
+                <ArrowLeft size={20} />
+              </button>
+              <button
+                onClick={toggleTheme}
+                className="flex items-center justify-center w-10 h-10 rounded-lg bg-white/20 hover:bg-white/30 transition-colors touch-manipulation"
+                aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+              >
+                {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+              </button>
+            </>
           ) : (
             <button
               onClick={toggleTheme}
