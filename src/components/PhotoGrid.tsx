@@ -145,7 +145,7 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
           <div className="relative max-w-full max-h-full">
             <button
               onClick={() => setFullscreenPhotoId(null)}
-              className="absolute top-4 right-4 z-10 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
+              className="absolute top-4 right-4 z-10 p-2 bg-black/50 text-white rounded-full hover:bg-black/30 transition-colors"
             >
               <X size={24} />
             </button>
@@ -156,7 +156,7 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
               onClick={(e) => e.stopPropagation()}
             />
             {(fullscreenPhoto.description || fullscreenPhoto.notes) && (
-              <div className="absolute bottom-4 left-4 right-4 bg-black/70 text-white p-4 rounded-lg">
+              <div className="absolute bottom-4 left-4 right-4 bg-black/30 text-white p-2 rounded-lg">
                 {fullscreenPhoto.description && (
                   <h3 className="font-semibold mb-2">{fullscreenPhoto.description}</h3>
                 )}
