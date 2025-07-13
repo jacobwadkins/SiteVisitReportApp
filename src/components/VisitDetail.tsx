@@ -20,25 +20,41 @@ export interface VisitDetailRef {
   handlePublish: () => void;
 }
 
-// Helper function to calculate textarea height based on content
-const calculateTextareaHeight = (text: string, minRows: number = 1, charsPerLine: number = 130): number => {
+// Helper function to calculate textarea height based on actual content width
+const calculateTextareaHeight = (text: string, minRows: number = 1, elementRef?: HTMLTextAreaElement | null): number => {
   if (!text.trim()) return minRows;
   
-  const lines = text.split('\n');
-  let totalRows = 0;
-  
-  for (const line of lines) {
-    if (line.length === 0) {
-      totalRows += 1; // Empty line
-    } else {
-      // Calculate wrapped lines based on approximate character width
-      // More accurate character count per line
-      const wrappedRows = Math.ceil(line.length / charsPerLine);
-      totalRows += Math.max(1, wrappedRows);
-    }
+  // If we have a reference to the actual textarea element, use it for accurate calculation
+  if (elementRef) {
+    // Create a temporary div with the same styling to measure text height
+    const tempDiv = document.createElement('div');
+    tempDiv.style.position = 'absolute';
+    tempDiv.style.visibility = 'hidden';
+    tempDiv.style.height = 'auto';
+    tempDiv.style.width = `${elementRef.clientWidth - 32}px`; // Account for padding (16px * 2)
+    tempDiv.style.fontSize = window.getComputedStyle(elementRef).fontSize;
+    tempDiv.style.fontFamily = window.getComputedStyle(elementRef).fontFamily;
+    tempDiv.style.lineHeight = window.getComputedStyle(elementRef).lineHeight;
+    tempDiv.style.padding = '0';
+    tempDiv.style.border = 'none';
+    tempDiv.style.whiteSpace = 'pre-wrap';
+    tempDiv.style.wordWrap = 'break-word';
+    tempDiv.textContent = text || 'A'; // Use 'A' as fallback for empty text
+    
+    document.body.appendChild(tempDiv);
+    const height = tempDiv.scrollHeight;
+    document.body.removeChild(tempDiv);
+    
+    // Calculate rows based on line height
+    const lineHeight = parseInt(window.getComputedStyle(elementRef).lineHeight) || 24;
+    const calculatedRows = Math.ceil(height / lineHeight);
+    
+    return Math.max(minRows, calculatedRows);
   }
   
-  return Math.max(minRows, totalRows);
+  // Fallback to line counting if no element reference
+  const lines = text.split('\n');
+  return Math.max(minRows, lines.length);
 };
 const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, ref) => {
   const [activeTab, setActiveTab] = useState<'report' | 'photos'>('report');
@@ -50,6 +66,11 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
   const [focusedFollowupIndex, setFocusedFollowupIndex] = useState<number | null>(null);
   const [selectedObservationIndex, setSelectedObservationIndex] = useState<number | null>(null);
   const [selectedFollowupIndex, setSelectedFollowupIndex] = useState<number | null>(null);
+  
+  // Refs for textarea elements to measure actual width
+  const backgroundTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const observationRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
+  const followupRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
 
   const visit = useStore((state) => state.visits.find((v) => v.id === visitId));
   const updateVisit = useStore((state) => state.updateVisit);
@@ -655,12 +676,13 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                 A. Background & Purpose
               </h3>
               <textarea
+                ref={backgroundTextareaRef}
                 value={reportFields.background}
                 onChange={(e) =>
                   setReportFields((prev) => ({ ...prev, background: e.target.value }))
                 }
                 className="w-full h-32 lg:h-auto lg:min-h-[8rem] px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
-                rows={window.innerWidth >= 1024 ? calculateTextareaHeight(reportFields.background, 3, 130) : undefined}
+                rows={window.innerWidth >= 1024 ? calculateTextareaHeight(reportFields.background, 3, backgroundTextareaRef.current) : undefined}
                 placeholder="Describe the background and purpose of this site visit..."
               />
             </div>
@@ -712,17 +734,22 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                         }}
                         className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
                         placeholder={tabbedObservations[index] ? `Bullet point...` : `Observation ${index + 1}...`}
-                        rows={window.innerWidth >= 1024 ? calculateTextareaHeight(observation, 1, 130) : 2}
+                        rows={window.innerWidth >= 1024 ? calculateTextareaHeight(observation, 1, observationRefs.current?.[index]) : 2}
                         autoFocus
                       />
                     ) : (
                       <textarea
+                        ref={(el) => {
+                          if (observationRefs.current) {
+                            observationRefs.current[index] = el;
+                          }
+                        }}
                         value={observation.replace(/^[\t\s]+/, '')}
                         onChange={(e) => handleObservationChange(index, e.target.value)}
                         onFocus={() => setFocusedObservationIndex(index)}
                         className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none lg:resize-y"
                         placeholder={tabbedObservations[index] ? `Bullet point...` : `Observation ${index + 1}...`}
-                        rows={window.innerWidth >= 1024 ? calculateTextareaHeight(observation, 1, 130) : 1}
+                        rows={window.innerWidth >= 1024 ? calculateTextareaHeight(observation, 1, observationRefs.current?.[index]) : 1}
                       />
                     )}
                   </div>
@@ -778,17 +805,22 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                           }}
                           className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
                           placeholder={tabbedFollowups[index] ? `Bullet point...` : `Recommendation ${getDisplayNumber(index, tabbedFollowups[index], tabbedFollowups)}...`}
-                          rows={window.innerWidth >= 1024 ? calculateTextareaHeight(followup, 1, 130) : 2}
+                          rows={window.innerWidth >= 1024 ? calculateTextareaHeight(followup, 1, followupRefs.current?.[index]) : 2}
                           autoFocus
                         />
                       ) : (
                         <textarea
+                          ref={(el) => {
+                            if (followupRefs.current) {
+                              followupRefs.current[index] = el;
+                            }
+                          }}
                           value={followup.replace(/^[\t\s]+/, '')}
                           onChange={(e) => handleFollowupChange(index, e.target.value)}
                           onFocus={() => setFocusedFollowupIndex(index)}
                           className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none lg:resize-y"
                           placeholder={tabbedFollowups[index] ? `Bullet point...` : `Recommendation ${getDisplayNumber(index, tabbedFollowups[index], tabbedFollowups)}...`}
-                          rows={window.innerWidth >= 1024 ? calculateTextareaHeight(followup, 1, 130) : 1}
+                          rows={window.innerWidth >= 1024 ? calculateTextareaHeight(followup, 1, followupRefs.current?.[index]) : 1}
                         />
                       )}
                     </div>
