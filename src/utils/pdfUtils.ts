@@ -123,7 +123,7 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
     pdf.setTextColor(0, 0, 0);
     pdf.setFont('Helvetica', 'normal');
     const backgroundLines = pdf.splitTextToSize(visit.background, contentWidth - 20);
-    pdf.text(backgroundLines, margin + 10, yPosition);
+    pdf.text(backgroundLines, margin + 12, yPosition);
     yPosition += backgroundLines.length * 14 + 20;
 
     if (yPosition > pageHeight - 100) {
