@@ -774,12 +774,31 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
             ]
           },
           {
-            reference: 'recommendations-numbering', 
+            reference: 'recommendations-numbering',
             levels: [
               {
                 level: 0,
                 format: LevelFormat.DECIMAL,
                 text: '%1.',
+                alignment: AlignmentType.START,
+                style: {
+                  paragraph: {
+                    indent: { left: 360, hanging: 360 }
+                  },
+                  run: {
+                    size: 22
+                  }
+                }
+              }
+            ]
+          },
+          {
+            reference: 'bullet-numbering',
+            levels: [
+              {
+                level: 0,
+                format: LevelFormat.BULLET,
+                text: '•',
                 alignment: AlignmentType.START,
                 style: {
                   paragraph: {
