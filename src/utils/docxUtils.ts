@@ -256,7 +256,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
         new Paragraph({
           children: [
             new TextRun({
-              text: '1. Background & Purpose',
+              text: 'I. Background & Purpose',
               bold: true,
               size: 28, // 14pt
               color: colors.navy
@@ -286,7 +286,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
         new Paragraph({
           children: [
             new TextRun({
-              text: '2. Notes & Observations',
+              text: 'II. Notes & Observations',
               bold: true,
               size: 28, // 14pt
               color: colors.navy
@@ -335,7 +335,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
         new Paragraph({
           children: [
             new TextRun({
-              text: '3. Recommendations & Follow-up Actions',
+              text: 'III. Recommendations & Follow-up Actions',
               bold: true,
               size: 28, // 14pt
               color: colors.navy
