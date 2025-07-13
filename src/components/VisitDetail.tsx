@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { forwardRef, useImperativeHandle } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Edit3, ChevronDown, ChevronUp, Share, FileText, Download, X, User, MapPin, Hash, Indent } from 'lucide-react';
+import { Edit3, ChevronDown, ChevronUp, Share, FileText, Download, X, User, MapPin, Hash, Indent, GripVertical } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { visitSchema, VisitFormData } from '../utils/validation';
 import { useDebounce } from '../hooks/useDebounce';
@@ -28,6 +28,10 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
   const [isExporting, setIsExporting] = useState(false);
   const [focusedObservationIndex, setFocusedObservationIndex] = useState<number | null>(null);
   const [focusedFollowupIndex, setFocusedFollowupIndex] = useState<number | null>(null);
+  const [draggedObservationIndex, setDraggedObservationIndex] = useState<number | null>(null);
+  const [draggedFollowupIndex, setDraggedFollowupIndex] = useState<number | null>(null);
+  const [longPressTimer, setLongPressTimer] = useState<NodeJS.Timeout | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const visit = useStore((state) => state.visits.find((v) => v.id === visitId));
   const updateVisit = useStore((state) => state.updateVisit);
@@ -268,6 +272,118 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
     newTabbedFollowups[index] = !newTabbedFollowups[index];
     setTabbedFollowups(newTabbedFollowups);
     triggerHaptic('light');
+  };
+  
+  // Drag and drop handlers for observations
+  const handleObservationMouseDown = (index: number, e: React.MouseEvent) => {
+    const timer = setTimeout(() => {
+      setDraggedObservationIndex(index);
+      setIsDragging(true);
+      triggerHaptic('medium');
+    }, 500); // 500ms long press
+    
+    setLongPressTimer(timer);
+  };
+  
+  const handleObservationMouseUp = () => {
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      setLongPressTimer(null);
+    }
+  };
+  
+  const handleObservationDragStart = (e: React.DragEvent, index: number) => {
+    e.dataTransfer.setData('text/plain', index.toString());
+    setDraggedObservationIndex(index);
+  };
+  
+  const handleObservationDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+  
+  const handleObservationDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    const dragIndex = parseInt(e.dataTransfer.getData('text/plain'));
+    
+    if (dragIndex === dropIndex) return;
+    
+    const newInputs = [...observationInputs];
+    const newTabbed = [...tabbedObservations];
+    
+    // Remove the dragged item
+    const [draggedInput] = newInputs.splice(dragIndex, 1);
+    const [draggedTabbed] = newTabbed.splice(dragIndex, 1);
+    
+    // Insert at new position
+    newInputs.splice(dropIndex, 0, draggedInput);
+    newTabbed.splice(dropIndex, 0, draggedTabbed);
+    
+    setObservationInputs(newInputs);
+    setTabbedObservations(newTabbed);
+    setDraggedObservationIndex(null);
+    setIsDragging(false);
+    triggerHaptic('heavy');
+  };
+  
+  const handleObservationDragEnd = () => {
+    setDraggedObservationIndex(null);
+    setIsDragging(false);
+  };
+  
+  // Drag and drop handlers for follow-ups
+  const handleFollowupMouseDown = (index: number, e: React.MouseEvent) => {
+    const timer = setTimeout(() => {
+      setDraggedFollowupIndex(index);
+      setIsDragging(true);
+      triggerHaptic('medium');
+    }, 500); // 500ms long press
+    
+    setLongPressTimer(timer);
+  };
+  
+  const handleFollowupMouseUp = () => {
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      setLongPressTimer(null);
+    }
+  };
+  
+  const handleFollowupDragStart = (e: React.DragEvent, index: number) => {
+    e.dataTransfer.setData('text/plain', index.toString());
+    setDraggedFollowupIndex(index);
+  };
+  
+  const handleFollowupDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+  
+  const handleFollowupDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    const dragIndex = parseInt(e.dataTransfer.getData('text/plain'));
+    
+    if (dragIndex === dropIndex) return;
+    
+    const newInputs = [...followupInputs];
+    const newTabbed = [...tabbedFollowups];
+    
+    // Remove the dragged item
+    const [draggedInput] = newInputs.splice(dragIndex, 1);
+    const [draggedTabbed] = newTabbed.splice(dragIndex, 1);
+    
+    // Insert at new position
+    newInputs.splice(dropIndex, 0, draggedInput);
+    newTabbed.splice(dropIndex, 0, draggedTabbed);
+    
+    setFollowupInputs(newInputs);
+    setTabbedFollowups(newTabbed);
+    setDraggedFollowupIndex(null);
+    setIsDragging(false);
+    triggerHaptic('heavy');
+  };
+  
+  const handleFollowupDragEnd = () => {
+    setDraggedFollowupIndex(null);
+    setIsDragging(false);
   };
 
   // Auto-collapse header when form is complete
@@ -568,7 +684,30 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
               </h3>
               <div className="space-y-3">
                 {observationInputs.map((observation, index) => (
-                  <div key={index} className="flex items-center space-x-2">
+                  <div 
+                    key={index} 
+                    className={`flex items-center space-x-2 ${
+                      draggedObservationIndex === index ? 'opacity-50' : ''
+                    } ${isDragging ? 'transition-opacity duration-200' : ''}`}
+                    draggable={draggedObservationIndex === index}
+                    onDragStart={(e) => handleObservationDragStart(e, index)}
+                    onDragOver={handleObservationDragOver}
+                    onDrop={(e) => handleObservationDrop(e, index)}
+                    onDragEnd={handleObservationDragEnd}
+                  >
+                    <button
+                      onMouseDown={(e) => handleObservationMouseDown(index, e)}
+                      onMouseUp={handleObservationMouseUp}
+                      onMouseLeave={handleObservationMouseUp}
+                      className={`flex-shrink-0 p-2 rounded-lg transition-colors touch-manipulation ${
+                        draggedObservationIndex === index
+                          ? 'bg-blue-200 dark:bg-blue-800 text-blue-700 dark:text-blue-300'
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                      }`}
+                      title="Long press to drag and reorder"
+                    >
+                      <GripVertical size={16} />
+                    </button>
                     <div className={`flex-shrink-0 w-8 h-10 flex items-center justify-center rounded-lg font-semibold ${
                       tabbedObservations[index] 
                         ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' 
@@ -625,7 +764,30 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
               <div className="space-y-3">
                 {followupInputs.map((followup, index) => {
                   return (
-                    <div key={index} className="flex items-center space-x-2">
+                    <div 
+                      key={index} 
+                      className={`flex items-center space-x-2 ${
+                        draggedFollowupIndex === index ? 'opacity-50' : ''
+                      } ${isDragging ? 'transition-opacity duration-200' : ''}`}
+                      draggable={draggedFollowupIndex === index}
+                      onDragStart={(e) => handleFollowupDragStart(e, index)}
+                      onDragOver={handleFollowupDragOver}
+                      onDrop={(e) => handleFollowupDrop(e, index)}
+                      onDragEnd={handleFollowupDragEnd}
+                    >
+                      <button
+                        onMouseDown={(e) => handleFollowupMouseDown(index, e)}
+                        onMouseUp={handleFollowupMouseUp}
+                        onMouseLeave={handleFollowupMouseUp}
+                        className={`flex-shrink-0 p-2 rounded-lg transition-colors touch-manipulation ${
+                          draggedFollowupIndex === index
+                            ? 'bg-blue-200 dark:bg-blue-800 text-blue-700 dark:text-blue-300'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        }`}
+                        title="Long press to drag and reorder"
+                      >
+                        <GripVertical size={16} />
+                      </button>
                       <div className={`flex-shrink-0 w-8 h-10 flex items-center justify-center rounded-lg font-semibold ${
                         tabbedFollowups[index] 
                           ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' 
