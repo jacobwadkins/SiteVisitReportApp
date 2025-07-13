@@ -157,7 +157,7 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
         const cleanLine = line.substring(1); // Remove the tab character
         const wrappedLines = pdf.splitTextToSize(cleanLine, contentWidth - 50);
         // First line with bullet
-        pdf.text(`• ${wrappedLines[0] || ''}`, margin + 32, yPosition);
+        pdf.text(`• ${wrappedLines[0] || ''}`, margin + 28, yPosition);
         // Subsequent lines with hanging indent
         for (let i = 1; i < wrappedLines.length; i++) {
           yPosition += 14;
@@ -173,12 +173,12 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
         
         // Draw number and first line
         pdf.text(numberText, margin + 12, yPosition);
-        pdf.text(firstLineText, margin + 24, yPosition);
+        pdf.text(firstLineText, margin + 28, yPosition);
         
         // Subsequent lines with hanging indent
         for (let i = 1; i < wrappedLines.length; i++) {
           yPosition += 14;
-          pdf.text(wrappedLines[i], margin + 24, yPosition); // Hanging indent aligned with first line text
+          pdf.text(wrappedLines[i], margin + 28, yPosition); // Hanging indent aligned with first line text
         }
         yPosition += 14 + 8; // Standard line spacing + 8pt between items
         observationNumber++;
