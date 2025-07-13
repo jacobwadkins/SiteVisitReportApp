@@ -113,7 +113,7 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
     pdf.setFontSize(14);
     pdf.setTextColor(colors.navy.r, colors.navy.g, colors.navy.b);
     pdf.setFont('Helvetica', 'bold');
-    pdf.text('I. Background & Purpose', margin, yPosition);
+    pdf.text('A. Background & Purpose', margin, yPosition);
     pdf.setLineWidth(0.5);
     pdf.setDrawColor(colors.navy.r, colors.navy.g, colors.navy.b);
     pdf.line(margin, yPosition + 5, margin + contentWidth, yPosition + 5);
@@ -137,7 +137,7 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
     pdf.setFontSize(14);
     pdf.setTextColor(colors.navy.r, colors.navy.g, colors.navy.b);
     pdf.setFont('Helvetica', 'bold');
-    pdf.text('II. Notes & Observations', margin, yPosition);
+    pdf.text('B. Notes & Observations', margin, yPosition);
     pdf.setLineWidth(0.5);
     pdf.setDrawColor(colors.navy.r, colors.navy.g, colors.navy.b);
     pdf.line(margin, yPosition + 5, margin + contentWidth, yPosition + 5);
@@ -197,7 +197,7 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
     pdf.setFontSize(14);
     pdf.setTextColor(colors.navy.r, colors.navy.g, colors.navy.b);
     pdf.setFont('Helvetica', 'bold');
-    pdf.text('III. Recommendations & Follow-up Actions', margin, yPosition);
+    pdf.text('C. Recommendations & Follow-up Actions', margin, yPosition);
     pdf.setLineWidth(0.5);
     pdf.setDrawColor(colors.navy.r, colors.navy.g, colors.navy.b);
     pdf.line(margin, yPosition + 5, margin + contentWidth, yPosition + 5);

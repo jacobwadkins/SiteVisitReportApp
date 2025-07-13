@@ -637,7 +637,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-5 space-y-6">
             <div>
               <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-300 mb-3 pb-2 border-b-2 border-blue-600">
-                I. Background & Purpose
+                A. Background & Purpose
               </h3>
               <textarea
                 value={reportFields.background}
@@ -651,7 +651,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
 
             <div>
               <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-300 mb-3 pb-2 border-b-2 border-blue-600">
-                II. Notes & Observations
+                B. Notes & Observations
               </h3>
               <div className="space-y-3">
                 {observationInputs.map((observation, index) => (
@@ -716,7 +716,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
 
             <div>
               <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-300 mb-3 pb-2 border-b-2 border-blue-600">
-                III. Recommendations & Follow-up Actions
+                C. Recommendations & Follow-up Actions
               </h3>
               <div className="space-y-3">
                 {followupInputs.map((followup, index) => {
