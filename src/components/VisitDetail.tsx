@@ -20,7 +20,7 @@ export interface VisitDetailRef {
   handlePublish: () => void;
 }
 
-const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, ref) => {
+const VisitDetail = forwardRef(({ visitId }, ref) => {
   const [activeTab, setActiveTab] = useState<'report' | 'photos'>('report');
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
