@@ -660,6 +660,8 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                   setReportFields((prev) => ({ ...prev, background: e.target.value }))
                 }
                 className="w-full h-32 lg:h-auto lg:min-h-[8rem] px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none lg:resize-y"
+                className="w-full h-32 lg:h-auto lg:min-h-[8rem] px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+                rows={window.innerWidth >= 1024 ? calculateTextareaHeight(reportFields.background, 4) : undefined}
                 placeholder="Describe the background and purpose of this site visit..."
               />
             </div>
@@ -709,7 +711,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                             setFocusedObservationIndex(null);
                           }
                         }}
-                        className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+                        className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none lg:resize-y"
                         placeholder={tabbedObservations[index] ? `Bullet point...` : `Observation ${index + 1}...`}
                         rows={calculateTextareaHeight(observation, 2)}
                         autoFocus
@@ -775,7 +777,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                               setFocusedFollowupIndex(null);
                             }
                           }}
-                          className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+                          className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none lg:resize-y"
                           placeholder={tabbedFollowups[index] ? `Bullet point...` : `Recommendation ${getDisplayNumber(index, tabbedFollowups[index], tabbedFollowups)}...`}
                           rows={calculateTextareaHeight(followup, 2)}
                           autoFocus
