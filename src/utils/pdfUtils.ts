@@ -56,7 +56,7 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
   pdf.text('Site Visit Report', margin + 10, 40);
   pdf.setFontSize(10);
   pdf.setFont('Helvetica', 'bold');
-  pdf.text('Haskell', pageWidth - margin - 10, 35, { align: 'right' });
+  pdf.text('Haskell', pageWidth - margin - 10, 40, { align: 'right' });
 
   // Placeholder for company logo (uncomment and add actual image if available)
   // pdf.addImage(logoSrc, 'PNG', margin, 20, 60, 40);
