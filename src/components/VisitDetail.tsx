@@ -23,6 +23,7 @@ export interface VisitDetailRef {
 const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, ref) => {
   const [activeTab, setActiveTab] = useState<'report' | 'photos'>('report');
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
+  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -345,12 +346,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
   };
 
   // Auto-collapse header when form is complete
-  useEffect(() => {
-    if (visit && visit.clientName && visit.siteName && visit.projectNo && visit.visitDate && visit.preparedBy && !isEditing) {
-      const timer = setTimeout(() => setIsHeaderCollapsed(true), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [visit, isEditing]);
+  // Removed auto-collapse behavior - header starts collapsed by default
 
   const handlePublish = () => {
     setShowPublishModal(true);
