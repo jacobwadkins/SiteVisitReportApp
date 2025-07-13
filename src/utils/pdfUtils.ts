@@ -161,7 +161,7 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
         // Subsequent lines with hanging indent
         for (let i = 1; i < wrappedLines.length; i++) {
           yPosition += 14;
-          pdf.text(wrappedLines[i], margin + 32, yPosition); // Hanging indent aligned with text
+          pdf.text(wrappedLines[i], margin + 34, yPosition); // Hanging indent aligned with text
         }
         yPosition += 14 + 8; // Standard line spacing + 8pt between items
       } else {
