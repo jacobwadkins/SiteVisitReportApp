@@ -22,10 +22,23 @@ export interface VisitDetailRef {
 
 // Helper function to calculate textarea height based on content
 const calculateTextareaHeight = (text: string, minRows: number = 1): number => {
-  const lines = text.split('\n').length;
-  const wrappedLines = Math.ceil(text.length / 50); // Approximate character wrap
-  const totalLines = Math.max(lines, Math.ceil(wrappedLines));
-  return Math.max(minRows, totalLines);
+  if (!text.trim()) return minRows;
+  
+  const lines = text.split('\n');
+  let totalRows = 0;
+  
+  for (const line of lines) {
+    if (line.length === 0) {
+      totalRows += 1; // Empty line
+    } else {
+      // Calculate wrapped lines based on approximate character width
+      // Assuming ~60 characters per line for better accuracy
+      const wrappedRows = Math.ceil(line.length / 60);
+      totalRows += Math.max(1, wrappedRows);
+    }
+  }
+  
+  return Math.max(minRows, totalRows);
 };
 const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, ref) => {
   const [activeTab, setActiveTab] = useState<'report' | 'photos'>('report');
