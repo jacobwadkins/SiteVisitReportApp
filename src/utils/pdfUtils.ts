@@ -137,7 +137,7 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
     pdf.setFontSize(14);
     pdf.setTextColor(colors.navy.r, colors.navy.g, colors.navy.b);
     pdf.setFont('Helvetica', 'bold');
-    pdf.text('2. Site Observations', margin, yPosition);
+    pdf.text('2. Notes & Observations', margin, yPosition);
     pdf.setLineWidth(0.5);
     pdf.setDrawColor(colors.navy.r, colors.navy.g, colors.navy.b);
     pdf.line(margin, yPosition + 5, margin + contentWidth, yPosition + 5);

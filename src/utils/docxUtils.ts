@@ -286,7 +286,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
         new Paragraph({
           children: [
             new TextRun({
-              text: '2. Site Observations',
+              text: '2. Notes & Observations',
               bold: true,
               size: 28, // 14pt
               color: colors.navy

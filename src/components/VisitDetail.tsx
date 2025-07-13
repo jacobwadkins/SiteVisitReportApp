@@ -638,7 +638,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
 
             <div>
               <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-300 mb-3 pb-2 border-b-2 border-blue-600">
-                Site Observations
+                Notes & Observations
               </h3>
               <div className="space-y-3">
                 {observationInputs.map((observation, index) => (
