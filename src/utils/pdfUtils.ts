@@ -252,6 +252,20 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
     yPosition += 15;
   }
 
+  // Add note about photos if there are any
+  if (photoData && photoData.length > 0) {
+    if (yPosition > pageHeight - 100) {
+      pdf.addPage();
+      yPosition = 60;
+    }
+    
+    pdf.setFontSize(12);
+    pdf.setTextColor(0, 0, 0);
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text('SEE FOLLOWING PAGES FOR PHOTOS.', margin, yPosition);
+    yPosition += 30;
+  }
+
   // Photos Section
   if (photoData && photoData.length > 0) {
     pdf.addPage();
@@ -325,7 +339,7 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
             pdf.setFontSize(9);
             pdf.setTextColor(colors.textGray.r, colors.textGray.g, colors.textGray.b);
             const notesLines = pdf.splitTextToSize(photo.notes, photoWidth - 10);
-            const maxLines = Math.min(2, notesLines.length);
+            const maxLines = Math.min(3, notesLines.length);
             for (let lineIndex = 0; lineIndex < maxLines; lineIndex++) {
               pdf.text(notesLines[lineIndex], xPos + 5, yPos + photoHeight + 30 + (lineIndex * 10));
             }

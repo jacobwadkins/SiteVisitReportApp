@@ -380,6 +380,22 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
       documentChildren.push(new Paragraph({ text: '', spacing: { after: 300 } }));
     }
 
+    // Add note about photos if there are any
+    if (photoData && photoData.length > 0) {
+      documentChildren.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: 'SEE FOLLOWING PAGES FOR PHOTOS.',
+              bold: true,
+              size: 24 // 12pt
+            })
+          ],
+          spacing: { after: 600 }
+        })
+      );
+    }
+
     // Photos Section
     if (photoData && photoData.length > 0) {
       // Add page break and photos header
@@ -670,7 +686,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                 new Paragraph({
                   children: [
                     new TextRun({
-                      text: leftPhoto?.notes ? leftPhoto.notes.split('\n').slice(0, 2).join(' ') : '',
+                      text: leftPhoto?.notes ? leftPhoto.notes.split('\n').slice(0, 3).join(' ') : '',
                       size: 18, // 9pt
                       color: colors.textGray
                     })
@@ -698,7 +714,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                 new Paragraph({
                   children: [
                     new TextRun({
-                      text: rightPhoto?.notes ? rightPhoto.notes.split('\n').slice(0, 2).join(' ') : '',
+                      text: rightPhoto?.notes ? rightPhoto.notes.split('\n').slice(0, 3).join(' ') : '',
                       size: 18, // 9pt
                       color: colors.textGray
                     })
