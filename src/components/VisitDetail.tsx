@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { forwardRef, useImperativeHandle } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Edit3, ChevronDown, ChevronUp, Share, FileText, Download, X, User, MapPin, Hash, Indent, GripVertical } from 'lucide-react';
+import { Edit3, ChevronDown, ChevronUp, Share, FileText, Download, X, User, MapPin, Hash, Indent } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { visitSchema, VisitFormData } from '../utils/validation';
 import { useDebounce } from '../hooks/useDebounce';
@@ -28,9 +28,6 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
   const [isExporting, setIsExporting] = useState(false);
   const [focusedObservationIndex, setFocusedObservationIndex] = useState<number | null>(null);
   const [focusedFollowupIndex, setFocusedFollowupIndex] = useState<number | null>(null);
-  const [draggedObservationIndex, setDraggedObservationIndex] = useState<number | null>(null);
-  const [draggedFollowupIndex, setDraggedFollowupIndex] = useState<number | null>(null);
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   const visit = useStore((state) => state.visits.find((v) => v.id === visitId));
   const updateVisit = useStore((state) => state.updateVisit);
@@ -271,154 +268,6 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
     newTabbedFollowups[index] = !newTabbedFollowups[index];
     setTabbedFollowups(newTabbedFollowups);
     triggerHaptic('light');
-  };
-
-  // Drag and drop handlers for observations
-  const handleObservationDragStart = (index: number) => {
-    if (tabbedObservations[index]) return; // Don't allow dragging bullet points
-    setDraggedObservationIndex(index);
-    triggerHaptic('medium');
-  };
-
-  const handleObservationDragOver = (e: React.DragEvent, index: number) => {
-    e.preventDefault();
-    if (tabbedObservations[index]) return; // Don't allow dropping on bullet points
-    setDragOverIndex(index);
-  };
-
-  const handleObservationDrop = (e: React.DragEvent, dropIndex: number) => {
-    e.preventDefault();
-    if (draggedObservationIndex === null || tabbedObservations[dropIndex]) return;
-
-    const dragIndex = draggedObservationIndex;
-    if (dragIndex === dropIndex) {
-      setDraggedObservationIndex(null);
-      setDragOverIndex(null);
-      return;
-    }
-
-    // Find all items that belong to the dragged numbered item (including its bullet points)
-    const itemsToMove: { input: string; isTabbed: boolean }[] = [];
-    
-    // Add the main numbered item
-    itemsToMove.push({
-      input: observationInputs[dragIndex],
-      isTabbed: false
-    });
-
-    // Add any bullet points that follow this numbered item
-    for (let i = dragIndex + 1; i < observationInputs.length; i++) {
-      if (tabbedObservations[i]) {
-        itemsToMove.push({
-          input: observationInputs[i],
-          isTabbed: true
-        });
-      } else {
-        break; // Stop when we hit the next numbered item
-      }
-    }
-
-    // Create new arrays without the moved items
-    const newInputs = [...observationInputs];
-    const newTabbed = [...tabbedObservations];
-    
-    // Remove items from their original position (in reverse order to maintain indices)
-    for (let i = dragIndex + itemsToMove.length - 1; i >= dragIndex; i--) {
-      newInputs.splice(i, 1);
-      newTabbed.splice(i, 1);
-    }
-
-    // Calculate the new insertion index (accounting for removed items)
-    let insertIndex = dropIndex;
-    if (dropIndex > dragIndex) {
-      insertIndex = dropIndex - itemsToMove.length;
-    }
-
-    // Insert items at the new position
-    itemsToMove.forEach((item, i) => {
-      newInputs.splice(insertIndex + i, 0, item.input);
-      newTabbed.splice(insertIndex + i, 0, item.isTabbed);
-    });
-
-    setObservationInputs(newInputs);
-    setTabbedObservations(newTabbed);
-    setDraggedObservationIndex(null);
-    setDragOverIndex(null);
-    triggerHaptic('heavy');
-  };
-
-  // Drag and drop handlers for follow-ups
-  const handleFollowupDragStart = (index: number) => {
-    if (tabbedFollowups[index]) return; // Don't allow dragging bullet points
-    setDraggedFollowupIndex(index);
-    triggerHaptic('medium');
-  };
-
-  const handleFollowupDragOver = (e: React.DragEvent, index: number) => {
-    e.preventDefault();
-    if (tabbedFollowups[index]) return; // Don't allow dropping on bullet points
-    setDragOverIndex(index);
-  };
-
-  const handleFollowupDrop = (e: React.DragEvent, dropIndex: number) => {
-    e.preventDefault();
-    if (draggedFollowupIndex === null || tabbedFollowups[dropIndex]) return;
-
-    const dragIndex = draggedFollowupIndex;
-    if (dragIndex === dropIndex) {
-      setDraggedFollowupIndex(null);
-      setDragOverIndex(null);
-      return;
-    }
-
-    // Find all items that belong to the dragged lettered item (including its bullet points)
-    const itemsToMove: { input: string; isTabbed: boolean }[] = [];
-    
-    // Add the main lettered item
-    itemsToMove.push({
-      input: followupInputs[dragIndex],
-      isTabbed: false
-    });
-
-    // Add any bullet points that follow this lettered item
-    for (let i = dragIndex + 1; i < followupInputs.length; i++) {
-      if (tabbedFollowups[i]) {
-        itemsToMove.push({
-          input: followupInputs[i],
-          isTabbed: true
-        });
-      } else {
-        break; // Stop when we hit the next lettered item
-      }
-    }
-
-    // Create new arrays without the moved items
-    const newInputs = [...followupInputs];
-    const newTabbed = [...tabbedFollowups];
-    
-    // Remove items from their original position (in reverse order to maintain indices)
-    for (let i = dragIndex + itemsToMove.length - 1; i >= dragIndex; i--) {
-      newInputs.splice(i, 1);
-      newTabbed.splice(i, 1);
-    }
-
-    // Calculate the new insertion index (accounting for removed items)
-    let insertIndex = dropIndex;
-    if (dropIndex > dragIndex) {
-      insertIndex = dropIndex - itemsToMove.length;
-    }
-
-    // Insert items at the new position
-    itemsToMove.forEach((item, i) => {
-      newInputs.splice(insertIndex + i, 0, item.input);
-      newTabbed.splice(insertIndex + i, 0, item.isTabbed);
-    });
-
-    setFollowupInputs(newInputs);
-    setTabbedFollowups(newTabbed);
-    setDraggedFollowupIndex(null);
-    setDragOverIndex(null);
-    triggerHaptic('heavy');
   };
 
   // Auto-collapse header when form is complete
@@ -719,27 +568,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
               </h3>
               <div className="space-y-3">
                 {observationInputs.map((observation, index) => (
-                  <div 
-                    key={index} 
-                    className={`flex items-center space-x-2 transition-all duration-200 ${
-                      draggedObservationIndex === index ? 'opacity-50 scale-95' : ''
-                    } ${
-                      dragOverIndex === index && !tabbedObservations[index] ? 'bg-blue-50 dark:bg-blue-900/20 rounded-lg p-2 -m-2' : ''
-                    }`}
-                    draggable={!tabbedObservations[index]}
-                    onDragStart={() => handleObservationDragStart(index)}
-                    onDragOver={(e) => handleObservationDragOver(e, index)}
-                    onDrop={(e) => handleObservationDrop(e, index)}
-                    onDragEnd={() => {
-                      setDraggedObservationIndex(null);
-                      setDragOverIndex(null);
-                    }}
-                  >
-                    {!tabbedObservations[index] && (
-                      <div className="flex-shrink-0 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-grab active:cursor-grabbing">
-                        <GripVertical size={16} />
-                      </div>
-                    )}
+                  <div key={index} className="flex items-center space-x-2">
                     <div className={`flex-shrink-0 w-8 h-10 flex items-center justify-center rounded-lg font-semibold ${
                       tabbedObservations[index] 
                         ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' 
@@ -796,27 +625,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
               <div className="space-y-3">
                 {followupInputs.map((followup, index) => {
                   return (
-                    <div 
-                      key={index} 
-                      className={`flex items-center space-x-2 transition-all duration-200 ${
-                        draggedFollowupIndex === index ? 'opacity-50 scale-95' : ''
-                      } ${
-                        dragOverIndex === index && !tabbedFollowups[index] ? 'bg-blue-50 dark:bg-blue-900/20 rounded-lg p-2 -m-2' : ''
-                      }`}
-                      draggable={!tabbedFollowups[index]}
-                      onDragStart={() => handleFollowupDragStart(index)}
-                      onDragOver={(e) => handleFollowupDragOver(e, index)}
-                      onDrop={(e) => handleFollowupDrop(e, index)}
-                      onDragEnd={() => {
-                        setDraggedFollowupIndex(null);
-                        setDragOverIndex(null);
-                      }}
-                    >
-                      {!tabbedFollowups[index] && (
-                        <div className="flex-shrink-0 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-grab active:cursor-grabbing">
-                          <GripVertical size={16} />
-                        </div>
-                      )}
+                    <div key={index} className="flex items-center space-x-2">
                       <div className={`flex-shrink-0 w-8 h-10 flex items-center justify-center rounded-lg font-semibold ${
                         tabbedFollowups[index] 
                           ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' 
