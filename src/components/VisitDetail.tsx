@@ -695,32 +695,27 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                     onDrop={(e) => handleObservationDrop(e, index)}
                     onDragEnd={handleObservationDragEnd}
                   >
-                    <button
+                    <div 
                       onMouseDown={(e) => handleObservationMouseDown(index, e)}
                       onMouseUp={handleObservationMouseUp}
                       onMouseLeave={handleObservationMouseUp}
-                      className={`flex-shrink-0 p-2 rounded-lg transition-colors touch-manipulation ${
+                      className={`flex-shrink-0 w-8 h-10 flex items-center justify-center rounded-lg font-semibold cursor-pointer transition-colors touch-manipulation ${
                         draggedObservationIndex === index
                           ? 'bg-blue-200 dark:bg-blue-800 text-blue-700 dark:text-blue-300'
-                          : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                          : tabbedObservations[index] 
+                            ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-blue-200 dark:hover:bg-blue-800' 
+                            : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800'
                       }`}
                       title="Long press to drag and reorder"
                     >
-                      <GripVertical size={16} />
-                    </button>
-                    <div className={`flex-shrink-0 w-8 h-10 flex items-center justify-center rounded-lg font-semibold ${
-                      tabbedObservations[index] 
-                        ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' 
-                        : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
-                    }`}>
                       {getDisplayNumber(index, tabbedObservations[index], tabbedObservations)}{tabbedObservations[index] ? '' : '.'}
                     </div>
                     <button
                       onClick={() => toggleObservationTab(index)}
                       className={`flex-shrink-0 p-2 rounded-lg transition-colors touch-manipulation ${
-                        tabbedObservations[index]
-                          ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                          : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                      tabbedObservations[index] 
+                        ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
                       }`}
                       title={tabbedObservations[index] ? 'Convert to numbered item' : 'Convert to bullet point'}
                     >
@@ -775,32 +770,27 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                       onDrop={(e) => handleFollowupDrop(e, index)}
                       onDragEnd={handleFollowupDragEnd}
                     >
-                      <button
+                      <div 
                         onMouseDown={(e) => handleFollowupMouseDown(index, e)}
                         onMouseUp={handleFollowupMouseUp}
                         onMouseLeave={handleFollowupMouseUp}
-                        className={`flex-shrink-0 p-2 rounded-lg transition-colors touch-manipulation ${
+                        className={`flex-shrink-0 w-8 h-10 flex items-center justify-center rounded-lg font-semibold cursor-pointer transition-colors touch-manipulation ${
                           draggedFollowupIndex === index
                             ? 'bg-blue-200 dark:bg-blue-800 text-blue-700 dark:text-blue-300'
-                            : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                            : tabbedFollowups[index] 
+                              ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-blue-200 dark:hover:bg-blue-800' 
+                              : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800'
                         }`}
                         title="Long press to drag and reorder"
                       >
-                        <GripVertical size={16} />
-                      </button>
-                      <div className={`flex-shrink-0 w-8 h-10 flex items-center justify-center rounded-lg font-semibold ${
-                        tabbedFollowups[index] 
-                          ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' 
-                          : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
-                      }`}>
                         {getDisplayLetter(index, tabbedFollowups[index], tabbedFollowups)}{tabbedFollowups[index] ? '' : '.'}
                       </div>
                       <button
                         onClick={() => toggleFollowupTab(index)}
                         className={`flex-shrink-0 p-2 rounded-lg transition-colors touch-manipulation ${
-                          tabbedFollowups[index]
-                            ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                            : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        tabbedFollowups[index] 
+                          ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
                         }`}
                         title={tabbedFollowups[index] ? 'Convert to lettered item' : 'Convert to bullet point'}
                       >
