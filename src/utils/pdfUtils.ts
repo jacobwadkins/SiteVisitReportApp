@@ -156,14 +156,25 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
         // This is a tabbed line - use bullet point
         const cleanLine = line.substring(1); // Remove the tab character
         const bulletLine = `• ${cleanLine}`;
-        const wrappedLines = pdf.splitTextToSize(bulletLine, contentWidth - 50);
-        pdf.text(wrappedLines, margin + 30, yPosition); // Indent bullet points
+        const wrappedLines = pdf.splitTextToSize(cleanLine, contentWidth - 50);
+        // First line with bullet
+        pdf.text(`• ${wrappedLines[0] || ''}`, margin + 30, yPosition);
+        // Subsequent lines with hanging indent
+        for (let i = 1; i < wrappedLines.length; i++) {
+          yPosition += 14;
+          pdf.text(wrappedLines[i], margin + 42, yPosition); // 12pt hanging indent (30 + 12)
+        }
         yPosition += wrappedLines.length * 14 + 5;
       } else {
         // This is a main line - use number
-        const numberedLine = `${observationNumber}. ${line}`;
-        const wrappedLines = pdf.splitTextToSize(numberedLine, contentWidth - 20);
-        pdf.text(wrappedLines, margin + 10, yPosition);
+        const wrappedLines = pdf.splitTextToSize(line, contentWidth - 30);
+        // First line with number
+        pdf.text(`${observationNumber}. ${wrappedLines[0] || ''}`, margin + 10, yPosition);
+        // Subsequent lines with hanging indent
+        for (let i = 1; i < wrappedLines.length; i++) {
+          yPosition += 14;
+          pdf.text(wrappedLines[i], margin + 28, yPosition); // 18pt hanging indent (10 + 18)
+        }
         yPosition += wrappedLines.length * 14 + 5;
         observationNumber++;
       }
@@ -200,15 +211,26 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
         // This is a tabbed line - use bullet point
         const cleanLine = line.substring(1); // Remove the tab character
         const bulletLine = `• ${cleanLine}`;
-        const wrappedLines = pdf.splitTextToSize(bulletLine, contentWidth - 50);
-        pdf.text(wrappedLines, margin + 30, yPosition); // Indent bullet points
+        const wrappedLines = pdf.splitTextToSize(cleanLine, contentWidth - 50);
+        // First line with bullet
+        pdf.text(`• ${wrappedLines[0] || ''}`, margin + 30, yPosition);
+        // Subsequent lines with hanging indent
+        for (let i = 1; i < wrappedLines.length; i++) {
+          yPosition += 14;
+          pdf.text(wrappedLines[i], margin + 42, yPosition); // 12pt hanging indent (30 + 12)
+        }
         yPosition += wrappedLines.length * 14 + 5;
       } else {
         // This is a main line - use letter
         const letter = String.fromCharCode(followupLetter);
-        const letteredLine = `${letter}. ${line}`;
-        const wrappedLines = pdf.splitTextToSize(letteredLine, contentWidth - 20);
-        pdf.text(wrappedLines, margin + 10, yPosition);
+        const wrappedLines = pdf.splitTextToSize(line, contentWidth - 30);
+        // First line with letter
+        pdf.text(`${letter}. ${wrappedLines[0] || ''}`, margin + 10, yPosition);
+        // Subsequent lines with hanging indent
+        for (let i = 1; i < wrappedLines.length; i++) {
+          yPosition += 14;
+          pdf.text(wrappedLines[i], margin + 28, yPosition); // 18pt hanging indent (10 + 18)
+        }
         yPosition += wrappedLines.length * 14 + 5;
         followupLetter++;
       }

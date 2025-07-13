@@ -764,7 +764,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                 alignment: AlignmentType.START,
                 style: {
                   paragraph: {
-                    indent: { left: 216, hanging: 216 }
+                    indent: { left: 360, hanging: 360 }
                   },
                   run: {
                     size: 22
@@ -783,7 +783,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                 alignment: AlignmentType.START,
                 style: {
                   paragraph: {
-                    indent: { left: 216, hanging: 216 }
+                    indent: { left: 360, hanging: 360 }
                   },
                   run: {
                     size: 22
