@@ -20,6 +20,13 @@ export interface VisitDetailRef {
   handlePublish: () => void;
 }
 
+// Helper function to calculate textarea height based on content
+const calculateTextareaHeight = (text: string, minRows: number = 1): number => {
+  const lines = text.split('\n').length;
+  const wrappedLines = Math.ceil(text.length / 50); // Approximate character wrap
+  const totalLines = Math.max(lines, Math.ceil(wrappedLines));
+  return Math.max(minRows, totalLines);
+};
 const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, ref) => {
   const [activeTab, setActiveTab] = useState<'report' | 'photos'>('report');
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(true);
@@ -689,19 +696,19 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                             setFocusedObservationIndex(null);
                           }
                         }}
-                        className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+                        className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none lg:resize-y"
                         placeholder={tabbedObservations[index] ? `Bullet point...` : `Observation ${index + 1}...`}
-                        rows={Math.max(2, Math.ceil(observation.length / 50))}
+                        rows={calculateTextareaHeight(observation, 2)}
                         autoFocus
                       />
                     ) : (
-                      <input
-                        type="text"
+                      <textarea
                         value={observation.replace(/^[\t\s]+/, '')}
                         onChange={(e) => handleObservationChange(index, e.target.value)}
                         onFocus={() => setFocusedObservationIndex(index)}
-                        className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none lg:resize-y"
                         placeholder={tabbedObservations[index] ? `Bullet point...` : `Observation ${index + 1}...`}
+                        rows={calculateTextareaHeight(observation, 1)}
                       />
                     )}
                   </div>
@@ -755,19 +762,19 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                               setFocusedFollowupIndex(null);
                             }
                           }}
-                          className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+                          className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none lg:resize-y"
                           placeholder={tabbedFollowups[index] ? `Bullet point...` : `Recommendation ${getDisplayNumber(index, tabbedFollowups[index], tabbedFollowups)}...`}
-                          rows={Math.max(2, Math.ceil(followup.length / 50))}
+                          rows={calculateTextareaHeight(followup, 2)}
                           autoFocus
                         />
                       ) : (
-                        <input
-                          type="text"
+                        <textarea
                           value={followup.replace(/^[\t\s]+/, '')}
                           onChange={(e) => handleFollowupChange(index, e.target.value)}
                           onFocus={() => setFocusedFollowupIndex(index)}
-                          className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                          className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none lg:resize-y"
                           placeholder={tabbedFollowups[index] ? `Bullet point...` : `Recommendation ${getDisplayNumber(index, tabbedFollowups[index], tabbedFollowups)}...`}
+                          rows={calculateTextareaHeight(followup, 1)}
                         />
                       )}
                     </div>
