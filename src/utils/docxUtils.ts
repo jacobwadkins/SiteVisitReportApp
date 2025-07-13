@@ -317,8 +317,10 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
               new TextRun({ text: cleanLine, size: 22 })
             ],
             spacing: { after: 100 },
-            indent: { left: isTabbed ? 600 : 216 },
-            numbering: isTabbed ? undefined : {
+            numbering: isTabbed ? {
+              reference: 'bullet-numbering',
+              level: 0
+            } : {
               reference: 'observations-numbering',
               level: 0
             }
