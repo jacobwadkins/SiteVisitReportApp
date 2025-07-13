@@ -21,7 +21,7 @@ export interface VisitDetailRef {
 }
 
 // Helper function to calculate textarea height based on content
-const calculateTextareaHeight = (text: string, minRows: number = 1, charsPerLine: number = 80): number => {
+const calculateTextareaHeight = (text: string, minRows: number = 1, charsPerLine: number = 130): number => {
   if (!text.trim()) return minRows;
   
   const lines = text.split('\n');
@@ -660,7 +660,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                   setReportFields((prev) => ({ ...prev, background: e.target.value }))
                 }
                 className="w-full h-32 lg:h-auto lg:min-h-[8rem] px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
-                rows={window.innerWidth >= 1024 ? calculateTextareaHeight(reportFields.background, 3, 90) : undefined}
+                rows={window.innerWidth >= 1024 ? calculateTextareaHeight(reportFields.background, 3, 130) : undefined}
                 placeholder="Describe the background and purpose of this site visit..."
               />
             </div>
@@ -712,7 +712,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                         }}
                         className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
                         placeholder={tabbedObservations[index] ? `Bullet point...` : `Observation ${index + 1}...`}
-                        rows={window.innerWidth >= 1024 ? calculateTextareaHeight(observation, 1, 90) : 2}
+                        rows={window.innerWidth >= 1024 ? calculateTextareaHeight(observation, 1, 130) : 2}
                         autoFocus
                       />
                     ) : (
@@ -722,7 +722,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                         onFocus={() => setFocusedObservationIndex(index)}
                         className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none lg:resize-y"
                         placeholder={tabbedObservations[index] ? `Bullet point...` : `Observation ${index + 1}...`}
-                        rows={window.innerWidth >= 1024 ? calculateTextareaHeight(observation, 1, 90) : 1}
+                        rows={window.innerWidth >= 1024 ? calculateTextareaHeight(observation, 1, 130) : 1}
                       />
                     )}
                   </div>
@@ -778,7 +778,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                           }}
                           className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
                           placeholder={tabbedFollowups[index] ? `Bullet point...` : `Recommendation ${getDisplayNumber(index, tabbedFollowups[index], tabbedFollowups)}...`}
-                          rows={window.innerWidth >= 1024 ? calculateTextareaHeight(followup, 1, 90) : 2}
+                          rows={window.innerWidth >= 1024 ? calculateTextareaHeight(followup, 1, 130) : 2}
                           autoFocus
                         />
                       ) : (
@@ -788,7 +788,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                           onFocus={() => setFocusedFollowupIndex(index)}
                           className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none lg:resize-y"
                           placeholder={tabbedFollowups[index] ? `Bullet point...` : `Recommendation ${getDisplayNumber(index, tabbedFollowups[index], tabbedFollowups)}...`}
-                          rows={window.innerWidth >= 1024 ? calculateTextareaHeight(followup, 1, 90) : 1}
+                          rows={window.innerWidth >= 1024 ? calculateTextareaHeight(followup, 1, 130) : 1}
                         />
                       )}
                     </div>
