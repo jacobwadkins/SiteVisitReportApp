@@ -207,7 +207,7 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
     pdf.setTextColor(0, 0, 0);
     pdf.setFont('Helvetica', 'normal');
     const followupLines = visit.followups.split('\n');
-    let followupLetter = 97; // Start with 'a'
+    let followupNumber = 1;
     followupLines.forEach((line) => {
       if (!line.trim()) return; // Skip empty lines
       
@@ -225,15 +225,14 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
         }
         yPosition += 14 + 8; // Standard line spacing + 8pt between items
       } else {
-        // This is a main line - use letter
-        const letter = String.fromCharCode(followupLetter);
+        // This is a main line - use number
         const wrappedLines = pdf.splitTextToSize(line, contentWidth - 30);
-        // First line with letter
-        const letterText = `${letter}.`;
+        // First line with number
+        const numberText = `${followupNumber}.`;
         const firstLineText = wrappedLines[0] || '';
         
-        // Draw letter and first line
-        pdf.text(letterText, margin + 10, yPosition);
+        // Draw number and first line
+        pdf.text(numberText, margin + 10, yPosition);
         pdf.text(firstLineText, margin + 32, yPosition);
         
         // Subsequent lines with hanging indent
@@ -242,7 +241,7 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
           pdf.text(wrappedLines[i], margin + 32, yPosition); // Hanging indent aligned with first line text
         }
         yPosition += 14 + 8; // Standard line spacing + 8pt between items
-        followupLetter++;
+        followupNumber++;
       }
 
       if (yPosition > pageHeight - 100) {

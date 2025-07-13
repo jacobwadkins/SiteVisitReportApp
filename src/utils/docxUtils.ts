@@ -368,7 +368,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
             spacing: { after: 100 },
             indent: { left: isTabbed ? 600 : 216 },
             numbering: isTabbed ? undefined : {
-              reference: 'recommendations-numbering',
+              reference: 'observations-numbering',
               level: 0
             }
           })
@@ -774,11 +774,11 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
             ]
           },
           {
-            reference: 'recommendations-numbering',
+            reference: 'recommendations-numbering', 
             levels: [
               {
                 level: 0,
-                format: LevelFormat.LOWER_LETTER,
+                format: LevelFormat.DECIMAL,
                 text: '%1.',
                 alignment: AlignmentType.START,
                 style: {

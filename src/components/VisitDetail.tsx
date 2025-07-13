@@ -736,7 +736,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                         }`}
                         title={selectedFollowupIndex === index ? "Click another item to move here, or click again to cancel" : "Click to select for moving"}
                       >
-                        {getDisplayLetter(index, tabbedFollowups[index], tabbedFollowups)}{tabbedFollowups[index] ? '' : '.'}
+                        {getDisplayNumber(index, tabbedFollowups[index], tabbedFollowups)}{tabbedFollowups[index] ? '' : '.'}
                       </div>
                       <button
                         onClick={() => toggleFollowupTab(index)}
@@ -745,7 +745,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                           ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
                           : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
                         }`}
-                        title={tabbedFollowups[index] ? 'Convert to lettered item' : 'Convert to bullet point'}
+                        title={tabbedFollowups[index] ? 'Convert to numbered item' : 'Convert to bullet point'}
                       >
                         <Indent size={16} />
                       </button>
@@ -761,7 +761,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                             }
                           }}
                           className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
-                          placeholder={tabbedFollowups[index] ? `Bullet point...` : `Recommendation ${getDisplayLetter(index, tabbedFollowups[index], tabbedFollowups)}...`}
+                          placeholder={tabbedFollowups[index] ? `Bullet point...` : `Recommendation ${getDisplayNumber(index, tabbedFollowups[index], tabbedFollowups)}...`}
                           rows={Math.max(2, Math.ceil(followup.length / 50))}
                           autoFocus
                         />
@@ -772,7 +772,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                           onChange={(e) => handleFollowupChange(index, e.target.value)}
                           onFocus={() => setFocusedFollowupIndex(index)}
                           className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                          placeholder={tabbedFollowups[index] ? `Bullet point...` : `Recommendation ${getDisplayLetter(index, tabbedFollowups[index], tabbedFollowups)}...`}
+                          placeholder={tabbedFollowups[index] ? `Bullet point...` : `Recommendation ${getDisplayNumber(index, tabbedFollowups[index], tabbedFollowups)}...`}
                         />
                       )}
                     </div>
