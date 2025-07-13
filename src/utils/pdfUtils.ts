@@ -155,27 +155,32 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
       if (line.startsWith('\t')) {
         // This is a tabbed line - use bullet point
         const cleanLine = line.substring(1); // Remove the tab character
-        const bulletLine = `• ${cleanLine}`;
         const wrappedLines = pdf.splitTextToSize(cleanLine, contentWidth - 50);
         // First line with bullet
-        pdf.text(`• ${wrappedLines[0] || ''}`, margin + 30, yPosition);
+        pdf.text(`• ${wrappedLines[0] || ''}`, margin + 20, yPosition);
         // Subsequent lines with hanging indent
         for (let i = 1; i < wrappedLines.length; i++) {
           yPosition += 14;
-          pdf.text(wrappedLines[i], margin + 42, yPosition); // 12pt hanging indent (30 + 12)
+          pdf.text(wrappedLines[i], margin + 32, yPosition); // Hanging indent aligned with text
         }
-        yPosition += wrappedLines.length * 14 + 5;
+        yPosition += 14 + 8; // Standard line spacing + 8pt between items
       } else {
         // This is a main line - use number
         const wrappedLines = pdf.splitTextToSize(line, contentWidth - 30);
         // First line with number
-        pdf.text(`${observationNumber}. ${wrappedLines[0] || ''}`, margin + 10, yPosition);
+        const numberText = `${observationNumber}.`;
+        const firstLineText = wrappedLines[0] || '';
+        
+        // Draw number and first line
+        pdf.text(numberText, margin + 10, yPosition);
+        pdf.text(firstLineText, margin + 32, yPosition);
+        
         // Subsequent lines with hanging indent
         for (let i = 1; i < wrappedLines.length; i++) {
           yPosition += 14;
-          pdf.text(wrappedLines[i], margin + 28, yPosition); // 18pt hanging indent (10 + 18)
+          pdf.text(wrappedLines[i], margin + 32, yPosition); // Hanging indent aligned with first line text
         }
-        yPosition += wrappedLines.length * 14 + 5;
+        yPosition += 14 + 8; // Standard line spacing + 8pt between items
         observationNumber++;
       }
 
@@ -210,28 +215,33 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
       if (line.startsWith('\t')) {
         // This is a tabbed line - use bullet point
         const cleanLine = line.substring(1); // Remove the tab character
-        const bulletLine = `• ${cleanLine}`;
         const wrappedLines = pdf.splitTextToSize(cleanLine, contentWidth - 50);
         // First line with bullet
-        pdf.text(`• ${wrappedLines[0] || ''}`, margin + 30, yPosition);
+        pdf.text(`• ${wrappedLines[0] || ''}`, margin + 20, yPosition);
         // Subsequent lines with hanging indent
         for (let i = 1; i < wrappedLines.length; i++) {
           yPosition += 14;
-          pdf.text(wrappedLines[i], margin + 42, yPosition); // 12pt hanging indent (30 + 12)
+          pdf.text(wrappedLines[i], margin + 32, yPosition); // Hanging indent aligned with text
         }
-        yPosition += wrappedLines.length * 14 + 5;
+        yPosition += 14 + 8; // Standard line spacing + 8pt between items
       } else {
         // This is a main line - use letter
         const letter = String.fromCharCode(followupLetter);
         const wrappedLines = pdf.splitTextToSize(line, contentWidth - 30);
         // First line with letter
-        pdf.text(`${letter}. ${wrappedLines[0] || ''}`, margin + 10, yPosition);
+        const letterText = `${letter}.`;
+        const firstLineText = wrappedLines[0] || '';
+        
+        // Draw letter and first line
+        pdf.text(letterText, margin + 10, yPosition);
+        pdf.text(firstLineText, margin + 32, yPosition);
+        
         // Subsequent lines with hanging indent
         for (let i = 1; i < wrappedLines.length; i++) {
           yPosition += 14;
-          pdf.text(wrappedLines[i], margin + 28, yPosition); // 18pt hanging indent (10 + 18)
+          pdf.text(wrappedLines[i], margin + 32, yPosition); // Hanging indent aligned with first line text
         }
-        yPosition += wrappedLines.length * 14 + 5;
+        yPosition += 14 + 8; // Standard line spacing + 8pt between items
         followupLetter++;
       }
 
