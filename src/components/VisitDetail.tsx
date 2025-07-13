@@ -28,10 +28,8 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
   const [isExporting, setIsExporting] = useState(false);
   const [focusedObservationIndex, setFocusedObservationIndex] = useState<number | null>(null);
   const [focusedFollowupIndex, setFocusedFollowupIndex] = useState<number | null>(null);
-  const [draggedObservationIndex, setDraggedObservationIndex] = useState<number | null>(null);
-  const [draggedFollowupIndex, setDraggedFollowupIndex] = useState<number | null>(null);
-  const [longPressTimer, setLongPressTimer] = useState<NodeJS.Timeout | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
+  const [selectedObservationIndex, setSelectedObservationIndex] = useState<number | null>(null);
+  const [selectedFollowupIndex, setSelectedFollowupIndex] = useState<number | null>(null);
 
   const visit = useStore((state) => state.visits.find((v) => v.id === visitId));
   const updateVisit = useStore((state) => state.updateVisit);
@@ -274,116 +272,76 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
     triggerHaptic('light');
   };
   
-  // Drag and drop handlers for observations
-  const handleObservationMouseDown = (index: number, e: React.MouseEvent) => {
-    const timer = setTimeout(() => {
-      setDraggedObservationIndex(index);
-      setIsDragging(true);
+  // Single click handlers for observations
+  const handleObservationClick = (index: number) => {
+    if (selectedObservationIndex === index) {
+      // Clicking the same item deselects it
+      setSelectedObservationIndex(null);
+      triggerHaptic('light');
+    } else if (selectedObservationIndex !== null) {
+      // Move the selected item to this position
+      moveObservation(selectedObservationIndex, index);
+      setSelectedObservationIndex(null);
+      triggerHaptic('heavy');
+    } else {
+      // Select this item for moving
+      setSelectedObservationIndex(index);
       triggerHaptic('medium');
-    }, 500); // 500ms long press
-    
-    setLongPressTimer(timer);
-  };
-  
-  const handleObservationMouseUp = () => {
-    if (longPressTimer) {
-      clearTimeout(longPressTimer);
-      setLongPressTimer(null);
     }
   };
   
-  const handleObservationDragStart = (e: React.DragEvent, index: number) => {
-    e.dataTransfer.setData('text/plain', index.toString());
-    setDraggedObservationIndex(index);
-  };
-  
-  const handleObservationDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-  
-  const handleObservationDrop = (e: React.DragEvent, dropIndex: number) => {
-    e.preventDefault();
-    const dragIndex = parseInt(e.dataTransfer.getData('text/plain'));
-    
-    if (dragIndex === dropIndex) return;
+  const moveObservation = (fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex) return;
     
     const newInputs = [...observationInputs];
     const newTabbed = [...tabbedObservations];
     
-    // Remove the dragged item
-    const [draggedInput] = newInputs.splice(dragIndex, 1);
-    const [draggedTabbed] = newTabbed.splice(dragIndex, 1);
+    // Remove the item from its current position
+    const [movedInput] = newInputs.splice(fromIndex, 1);
+    const [movedTabbed] = newTabbed.splice(fromIndex, 1);
     
     // Insert at new position
-    newInputs.splice(dropIndex, 0, draggedInput);
-    newTabbed.splice(dropIndex, 0, draggedTabbed);
+    newInputs.splice(toIndex, 0, movedInput);
+    newTabbed.splice(toIndex, 0, movedTabbed);
     
     setObservationInputs(newInputs);
     setTabbedObservations(newTabbed);
-    setDraggedObservationIndex(null);
-    setIsDragging(false);
-    triggerHaptic('heavy');
   };
   
-  const handleObservationDragEnd = () => {
-    setDraggedObservationIndex(null);
-    setIsDragging(false);
-  };
-  
-  // Drag and drop handlers for follow-ups
-  const handleFollowupMouseDown = (index: number, e: React.MouseEvent) => {
-    const timer = setTimeout(() => {
-      setDraggedFollowupIndex(index);
-      setIsDragging(true);
+  // Single click handlers for follow-ups
+  const handleFollowupClick = (index: number) => {
+    if (selectedFollowupIndex === index) {
+      // Clicking the same item deselects it
+      setSelectedFollowupIndex(null);
+      triggerHaptic('light');
+    } else if (selectedFollowupIndex !== null) {
+      // Move the selected item to this position
+      moveFollowup(selectedFollowupIndex, index);
+      setSelectedFollowupIndex(null);
+      triggerHaptic('heavy');
+    } else {
+      // Select this item for moving
+      setSelectedFollowupIndex(index);
       triggerHaptic('medium');
-    }, 500); // 500ms long press
-    
-    setLongPressTimer(timer);
-  };
-  
-  const handleFollowupMouseUp = () => {
-    if (longPressTimer) {
-      clearTimeout(longPressTimer);
-      setLongPressTimer(null);
     }
   };
   
-  const handleFollowupDragStart = (e: React.DragEvent, index: number) => {
-    e.dataTransfer.setData('text/plain', index.toString());
-    setDraggedFollowupIndex(index);
-  };
-  
-  const handleFollowupDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-  
-  const handleFollowupDrop = (e: React.DragEvent, dropIndex: number) => {
-    e.preventDefault();
-    const dragIndex = parseInt(e.dataTransfer.getData('text/plain'));
-    
-    if (dragIndex === dropIndex) return;
+  const moveFollowup = (fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex) return;
     
     const newInputs = [...followupInputs];
     const newTabbed = [...tabbedFollowups];
     
-    // Remove the dragged item
-    const [draggedInput] = newInputs.splice(dragIndex, 1);
-    const [draggedTabbed] = newTabbed.splice(dragIndex, 1);
+    // Remove the item from its current position
+    const [movedInput] = newInputs.splice(fromIndex, 1);
+    const [movedTabbed] = newTabbed.splice(fromIndex, 1);
     
     // Insert at new position
-    newInputs.splice(dropIndex, 0, draggedInput);
-    newTabbed.splice(dropIndex, 0, draggedTabbed);
+    newInputs.splice(toIndex, 0, movedInput);
+    newTabbed.splice(toIndex, 0, movedTabbed);
     
     setFollowupInputs(newInputs);
     setTabbedFollowups(newTabbed);
-    setDraggedFollowupIndex(null);
-    setIsDragging(false);
-    triggerHaptic('heavy');
-  };
-  
-  const handleFollowupDragEnd = () => {
-    setDraggedFollowupIndex(null);
-    setIsDragging(false);
   };
 
   // Auto-collapse header when form is complete
@@ -686,27 +644,18 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                 {observationInputs.map((observation, index) => (
                   <div 
                     key={index} 
-                    className={`flex items-center space-x-2 ${
-                      draggedObservationIndex === index ? 'opacity-50' : ''
-                    } ${isDragging ? 'transition-opacity duration-200' : ''}`}
-                    draggable={draggedObservationIndex === index}
-                    onDragStart={(e) => handleObservationDragStart(e, index)}
-                    onDragOver={handleObservationDragOver}
-                    onDrop={(e) => handleObservationDrop(e, index)}
-                    onDragEnd={handleObservationDragEnd}
+                    className="flex items-center space-x-2"
                   >
                     <div 
-                      onMouseDown={(e) => handleObservationMouseDown(index, e)}
-                      onMouseUp={handleObservationMouseUp}
-                      onMouseLeave={handleObservationMouseUp}
+                      onClick={() => handleObservationClick(index)}
                       className={`flex-shrink-0 w-8 h-10 flex items-center justify-center rounded-lg font-semibold cursor-pointer transition-colors touch-manipulation ${
-                        draggedObservationIndex === index
-                          ? 'bg-blue-200 dark:bg-blue-800 text-blue-700 dark:text-blue-300'
+                        selectedObservationIndex === index
+                          ? 'bg-blue-500 text-white shadow-lg scale-110'
                           : tabbedObservations[index] 
-                            ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-blue-200 dark:hover:bg-blue-800' 
+                            ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-blue-800' 
                             : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800'
                       }`}
-                      title="Long press to drag and reorder"
+                      title={selectedObservationIndex === index ? "Click another item to move here, or click again to cancel" : "Click to select for moving"}
                     >
                       {getDisplayNumber(index, tabbedObservations[index], tabbedObservations)}{tabbedObservations[index] ? '' : '.'}
                     </div>
@@ -761,27 +710,18 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                   return (
                     <div 
                       key={index} 
-                      className={`flex items-center space-x-2 ${
-                        draggedFollowupIndex === index ? 'opacity-50' : ''
-                      } ${isDragging ? 'transition-opacity duration-200' : ''}`}
-                      draggable={draggedFollowupIndex === index}
-                      onDragStart={(e) => handleFollowupDragStart(e, index)}
-                      onDragOver={handleFollowupDragOver}
-                      onDrop={(e) => handleFollowupDrop(e, index)}
-                      onDragEnd={handleFollowupDragEnd}
+                      className="flex items-center space-x-2"
                     >
                       <div 
-                        onMouseDown={(e) => handleFollowupMouseDown(index, e)}
-                        onMouseUp={handleFollowupMouseUp}
-                        onMouseLeave={handleFollowupMouseUp}
+                        onClick={() => handleFollowupClick(index)}
                         className={`flex-shrink-0 w-8 h-10 flex items-center justify-center rounded-lg font-semibold cursor-pointer transition-colors touch-manipulation ${
-                          draggedFollowupIndex === index
-                            ? 'bg-blue-200 dark:bg-blue-800 text-blue-700 dark:text-blue-300'
+                          selectedFollowupIndex === index
+                            ? 'bg-blue-500 text-white shadow-lg scale-110'
                             : tabbedFollowups[index] 
-                              ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-blue-200 dark:hover:bg-blue-800' 
+                              ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-blue-800' 
                               : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800'
                         }`}
-                        title="Long press to drag and reorder"
+                        title={selectedFollowupIndex === index ? "Click another item to move here, or click again to cancel" : "Click to select for moving"}
                       >
                         {getDisplayLetter(index, tabbedFollowups[index], tabbedFollowups)}{tabbedFollowups[index] ? '' : '.'}
                       </div>
