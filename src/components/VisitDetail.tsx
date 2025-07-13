@@ -607,7 +607,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
           </button>
           <button
             onClick={() => setActiveTab('photos')}
-            className={`flex-1 py-4 px-6 font-medium transition-colors ${
+            className={`flex-1 py-2 px-6 font-medium transition-colors ${
               activeTab === 'photos'
                 ? 'bg-blue-600 text-white'
                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
