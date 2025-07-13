@@ -262,7 +262,7 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
     pdf.setFontSize(12);
     pdf.setTextColor(0, 0, 0);
     pdf.setFont('Helvetica', 'bold');
-    pdf.text('SEE FOLLOWING PAGES FOR PHOTOS.', margin, yPosition);
+    pdf.text('SEE FOLLOWING PAGE(S) FOR PHOTOS.', margin, yPosition);
     yPosition += 30;
   }
 
