@@ -640,9 +640,6 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                   setReportFields((prev) => ({ ...prev, background: e.target.value }))
                 }
                 className="w-full h-32 lg:h-auto lg:min-h-[8rem] px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none lg:resize-y"
-                style={{
-                  height: window.innerWidth >= 1024 ? `${Math.max(128, reportFields.background.length * 0.6 + 64)}px` : '8rem'
-                }}
                 placeholder="Describe the background and purpose of this site visit..."
               />
             </div>
@@ -703,10 +700,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                         value={observation.replace(/^[\t\s]+/, '')}
                         onChange={(e) => handleObservationChange(index, e.target.value)}
                         onFocus={() => setFocusedObservationIndex(index)}
-                        className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white lg:min-h-[3rem] lg:h-auto"
-                        style={{
-                          height: window.innerWidth >= 1024 ? `${Math.max(48, observation.length * 0.8 + 24)}px` : 'auto'
-                        }}
+                        className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                         placeholder={tabbedObservations[index] ? `Bullet point...` : `Observation ${index + 1}...`}
                       />
                     )}
@@ -772,10 +766,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                           value={followup.replace(/^[\t\s]+/, '')}
                           onChange={(e) => handleFollowupChange(index, e.target.value)}
                           onFocus={() => setFocusedFollowupIndex(index)}
-                          className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white lg:min-h-[3rem] lg:h-auto"
-                          style={{
-                            height: window.innerWidth >= 1024 ? `${Math.max(48, followup.length * 0.8 + 24)}px` : 'auto'
-                          }}
+                          className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                           placeholder={tabbedFollowups[index] ? `Bullet point...` : `Recommendation ${getDisplayNumber(index, tabbedFollowups[index], tabbedFollowups)}...`}
                         />
                       )}
