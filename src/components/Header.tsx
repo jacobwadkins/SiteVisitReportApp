@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, Menu, Share, Wifi, WifiOff } from 'lucide-react';
+import { ArrowLeft, Sun, Moon, Share, Wifi, WifiOff } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { useOfflineStatus } from '../hooks/useOfflineStatus';
 
@@ -43,9 +43,9 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={toggleTheme}
               className="flex items-center justify-center w-10 h-10 rounded-lg bg-white/20 hover:bg-white/30 transition-colors touch-manipulation"
-              aria-label="Toggle theme"
+              aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
             >
-              <Menu size={20} />
+              {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
             </button>
           )}
         </div>
