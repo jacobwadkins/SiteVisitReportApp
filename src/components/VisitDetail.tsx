@@ -374,9 +374,22 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
       triggerHaptic('heavy');
       
       // Show success message
+      // Show non-blocking success message
+      const successMessage = document.createElement('div');
+      successMessage.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300';
+      successMessage.textContent = `📄 ${format.toUpperCase()} report generated successfully!`;
+      document.body.appendChild(successMessage);
+      
+      // Auto-remove after 3 seconds
       setTimeout(() => {
-        alert(`📄 ${format.toUpperCase()} report generated successfully!`);
-      }, 500);
+        successMessage.style.opacity = '0';
+        successMessage.style.transform = 'translate(-50%, -20px)';
+        setTimeout(() => {
+          if (document.body.contains(successMessage)) {
+            document.body.removeChild(successMessage);
+          }
+        }, 300);
+      }, 3000);
     } catch (error) {
       console.error(`Error generating ${format.toUpperCase()}:`, error);
       alert(`Error generating ${format.toUpperCase()}. Please try again.`);
