@@ -1,3 +1,23 @@
+// HEIC conversion utility
+const convertHeicToJpeg = async (file: File): Promise<File> => {
+  try {
+    const heic2any = (await import('heic2any')).default;
+    const convertedBlob = await heic2any({
+      blob: file,
+      toType: 'image/jpeg',
+      quality: 0.9
+    }) as Blob;
+    
+    return new File([convertedBlob], file.name.replace(/\.heic$/i, '.jpg'), {
+      type: 'image/jpeg',
+      lastModified: file.lastModified
+    });
+  } catch (error) {
+    console.error('HEIC conversion failed:', error);
+    throw new Error('Failed to convert HEIC image. Please try a different format.');
+  }
+};
+
 export const compressImage = (file: File, maxSizeMB: number = 5): Promise<string> => {
   return new Promise((resolve, reject) => {
     const canvas = document.createElement('canvas');
@@ -46,8 +66,26 @@ export const compressImage = (file: File, maxSizeMB: number = 5): Promise<string
   });
 };
 
+export const processImageFile = async (file: File, maxSizeMB: number = 5): Promise<string> => {
+  let processedFile = file;
+  
+  // Convert HEIC to JPEG if needed
+  if (file.type === 'image/heic' || file.type === 'image/heif' || file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif')) {
+    processedFile = await convertHeicToJpeg(file);
+  }
+  
+  // Compress the image
+  return compressImage(processedFile, maxSizeMB);
+};
+
 export const validateImageFile = (file: File): string | null => {
-  if (!file.type.startsWith('image/')) {
+  const isValidImageType = file.type.startsWith('image/') || 
+                          file.type === 'image/heic' || 
+                          file.type === 'image/heif' ||
+                          file.name.toLowerCase().endsWith('.heic') ||
+                          file.name.toLowerCase().endsWith('.heif');
+  
+  if (!isValidImageType) {
     return 'Please select an image file';
   }
   

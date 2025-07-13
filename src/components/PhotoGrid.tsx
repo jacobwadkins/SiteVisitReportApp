@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Camera, Edit3, Trash2, Save, X } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { photoSchema, PhotoFormData } from '../utils/validation';
-import { compressImage, validateImageFile } from '../utils/imageUtils';
+import { processImageFile, validateImageFile } from '../utils/imageUtils';
 import { useHapticFeedback } from '../hooks/useHapticFeedback';
 import { photoDB } from '../utils/indexedDB';
 
@@ -74,14 +74,14 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
       }
 
       try {
-        const compressedImage = await compressImage(file);
+        const processedImage = await processImageFile(file);
         await addPhoto(visitId, {
           description: '',
           notes: '',
-        }, compressedImage);
+        }, processedImage);
       } catch (error) {
         console.error('Error processing image:', error);
-        alert('Failed to process image. Please try again.');
+        alert(error instanceof Error ? error.message : 'Failed to process image. Please try again.');
       }
     }
 
@@ -188,7 +188,7 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
           ref={fileInputRef}
           type="file"
           multiple
-          accept="image/*"
+          accept="image/*,.heic,.heif"
           onChange={(e) => handleFileUpload(e.target.files)}
           className="hidden"
         />
