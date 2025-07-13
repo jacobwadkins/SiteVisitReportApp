@@ -709,7 +709,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                             setFocusedObservationIndex(null);
                           }
                         }}
-                        className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none lg:resize-y"
+                        className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
                         placeholder={tabbedObservations[index] ? `Bullet point...` : `Observation ${index + 1}...`}
                         rows={calculateTextareaHeight(observation, 2)}
                         autoFocus
@@ -775,7 +775,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
                               setFocusedFollowupIndex(null);
                             }
                           }}
-                          className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none lg:resize-y"
+                          className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
                           placeholder={tabbedFollowups[index] ? `Bullet point...` : `Recommendation ${getDisplayNumber(index, tabbedFollowups[index], tabbedFollowups)}...`}
                           rows={calculateTextareaHeight(followup, 2)}
                           autoFocus
