@@ -743,7 +743,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
             }),
             new TableCell({
               children: [new Paragraph({ text: '' })],
-              margins: { top: 100, bottom: 240, left: 100, right: 100 }, // 12pt bottom margin
+              margins: { top: 0, bottom: 0, left: 100, right: 100 }, // 12pt bottom margin
               width: { size: 47.5, type: 'pct' }
             })
           ];
