@@ -9,6 +9,7 @@ interface StoreState {
   currentVisitId: string | null;
   theme: Theme;
   isOffline: boolean;
+  photosPerPage: 2 | 6;
   
   // Visit actions
   addVisit: (visit: Omit<Visit, 'id' | 'createdAt' | 'updatedAt'>) => string;
@@ -25,6 +26,7 @@ interface StoreState {
   // App actions
   setTheme: (theme: Theme) => void;
   setOfflineStatus: (isOffline: boolean) => void;
+  setPhotosPerPage: (photosPerPage: 2 | 6) => void;
 }
 
 export const useStore = create<StoreState>()(
@@ -35,6 +37,7 @@ export const useStore = create<StoreState>()(
       currentVisitId: null,
       theme: 'light',
       isOffline: false,
+      photosPerPage: 6,
       
       // Visit actions
       addVisit: (visitData) => {
@@ -183,12 +186,17 @@ export const useStore = create<StoreState>()(
       setOfflineStatus: (isOffline) => {
         set({ isOffline });
       },
+      
+      setPhotosPerPage: (photosPerPage) => {
+        set({ photosPerPage });
+      },
     }),
     {
       name: 'site-visits-storage',
       partialize: (state) => ({
         visits: state.visits,
         theme: state.theme,
+        photosPerPage: state.photosPerPage,
       }),
     }
   )

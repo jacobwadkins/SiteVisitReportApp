@@ -19,15 +19,14 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [photoSources, setPhotoSources] = useState<Record<string, string>>({});
   const [fullscreenPhotoId, setFullscreenPhotoId] = useState<string | null>(null);
-  const [showExportSettings, setShowExportSettings] = useState(false);
-  const [photosPerPage, setPhotosPerPage] = useState<2 | 6>(6);
-  const [isExporting, setIsExporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const visit = useStore((state) => state.visits.find((v) => v.id === visitId));
   const addPhoto = useStore((state) => state.addPhoto);
   const updatePhoto = useStore((state) => state.updatePhoto);
   const deletePhoto = useStore((state) => state.deletePhoto);
+  const photosPerPage = useStore((state) => state.photosPerPage);
+  const setPhotosPerPage = useStore((state) => state.setPhotosPerPage);
   const triggerHaptic = useHapticFeedback();
 
   // Load photo sources from IndexedDB when component mounts or visit changes
@@ -135,145 +134,12 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
     }
   };
 
-  const handleExport = async (format: 'pdf' | 'docx') => {
-    if (!visit) return;
-
-    setIsExporting(true);
-    setShowExportSettings(false);
-    triggerHaptic('medium');
-
-    try {
-      if (format === 'pdf') {
-        await generatePDF(visit, photosPerPage);
-      } else {
-        await generateDOCX(visit, photosPerPage);
-      }
-      
-      triggerHaptic('heavy');
-      
-      // Show success message
-      const successMessage = document.createElement('div');
-      successMessage.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300';
-      successMessage.textContent = `📄 ${format.toUpperCase()} report generated successfully!`;
-      document.body.appendChild(successMessage);
-      
-      // Auto-remove after 3 seconds
-      setTimeout(() => {
-        successMessage.style.opacity = '0';
-        successMessage.style.transform = 'translate(-50%, -20px)';
-        setTimeout(() => {
-          if (document.body.contains(successMessage)) {
-            document.body.removeChild(successMessage);
-          }
-        }, 300);
-      }, 3000);
-    } catch (error) {
-      console.error(`Error generating ${format.toUpperCase()}:`, error);
-      alert(`Error generating ${format.toUpperCase()}. Please try again.`);
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
   if (!visit) return null;
 
   const fullscreenPhoto = fullscreenPhotoId ? visit.photos.find(p => p.id === fullscreenPhotoId) : null;
 
   return (
     <>
-      {/* Export Settings Modal */}
-      {showExportSettings && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-xl">
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                📤 Export Photos
-              </h3>
-              <button
-                onClick={() => setShowExportSettings(false)}
-                className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <X size={20} />
-              </button>
-            </div>
-            
-            <div className="p-4 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Photos per page
-                </label>
-                <div className="space-y-2">
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="photosPerPage"
-                      value="6"
-                      checked={photosPerPage === 6}
-                      onChange={() => setPhotosPerPage(6)}
-                      className="mr-2"
-                    />
-                    <span className="text-gray-900 dark:text-white">6 photos per page (compact)</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="photosPerPage"
-                      value="2"
-                      checked={photosPerPage === 2}
-                      onChange={() => setPhotosPerPage(2)}
-                      className="mr-2"
-                    />
-                    <span className="text-gray-900 dark:text-white">2 photos per page (detailed)</span>
-                  </label>
-                </div>
-              </div>
-              
-              <div className="space-y-3">
-                <button
-                  onClick={() => handleExport('pdf')}
-                  disabled={isExporting}
-                  className="w-full flex items-center space-x-3 p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
-                >
-                  <div className="w-6 h-6 flex items-center justify-center">
-                    📄
-                  </div>
-                  <div className="text-left">
-                    <div className="font-semibold">Export as PDF</div>
-                    <div className="text-sm opacity-75">{photosPerPage} photos per page</div>
-                  </div>
-                </button>
-                
-                <button
-                  onClick={() => handleExport('docx')}
-                  disabled={isExporting}
-                  className="w-full flex items-center space-x-3 p-4 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
-                >
-                  <div className="w-6 h-6 flex items-center justify-center">
-                    📝
-                  </div>
-                  <div className="text-left">
-                    <div className="font-semibold">Export as DOCX</div>
-                    <div className="text-sm opacity-75">{photosPerPage} photos per page</div>
-                  </div>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Loading overlay when exporting */}
-      {isExporting && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-xl">
-            <div className="flex items-center space-x-3">
-              <div className="w-6 h-6 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin" />
-              <span className="text-gray-900 dark:text-white font-medium">Exporting photos...</span>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Fullscreen Photo Modal */}
       {fullscreenPhotoId && fullscreenPhoto && photoSources[fullscreenPhotoId] && (
         <div 
@@ -308,16 +174,44 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
       )}
 
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-5">
-      {/* Export Button */}
+      {/* Photos Per Page Toggle */}
       {visit.photos.length > 0 && (
         <div className="mb-6 flex justify-end">
-          <button
-            onClick={() => setShowExportSettings(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors touch-manipulation"
-          >
-            <Settings size={16} />
-            <span>Export Photos</span>
-          </button>
+          <div className="flex items-center space-x-3">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Photos per page:
+            </span>
+            <div className="relative">
+              <div className="flex bg-gray-200 dark:bg-gray-700 rounded-lg p-1">
+                <button
+                  onClick={() => {
+                    setPhotosPerPage(2);
+                    triggerHaptic('light');
+                  }}
+                  className={`px-3 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
+                    photosPerPage === 2
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
+                  }`}
+                >
+                  2
+                </button>
+                <button
+                  onClick={() => {
+                    setPhotosPerPage(6);
+                    triggerHaptic('light');
+                  }}
+                  className={`px-3 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
+                    photosPerPage === 6
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
+                  }`}
+                >
+                  6
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

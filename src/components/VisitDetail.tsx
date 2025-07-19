@@ -74,6 +74,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
 
   const visit = useStore((state) => state.visits.find((v) => v.id === visitId));
   const updateVisit = useStore((state) => state.updateVisit);
+  const photosPerPage = useStore((state) => state.photosPerPage);
   const triggerHaptic = useHapticFeedback();
 
   // Helper functions for display numbering
@@ -402,9 +403,9 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
 
     try {
       if (format === 'pdf') {
-        await generatePDF(visit);
+        await generatePDF(visit, photosPerPage);
       } else {
-        await generateDOCX(visit);
+        await generateDOCX(visit, photosPerPage);
       }
       
       triggerHaptic('heavy');
