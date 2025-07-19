@@ -16,7 +16,7 @@ const addRobotoFont = (pdf: jsPDF) => {
   }
 };
 
-export const generatePDF = async (visit: Visit): Promise<void> => {
+export const generatePDF = async (visit: Visit, photosPerPage: 2 | 6 = 6): Promise<void> => {
   // Load photo sources from IndexedDB
   const photoData = await photoDB.getPhotosByVisitId(visit.id);
   const photoSources: Record<string, string> = {};
@@ -280,6 +280,93 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
     pdf.line(margin, yPosition + 5, margin + contentWidth, yPosition + 5);
     yPosition += 15;
 
+    if (photosPerPage === 2) {
+      // 2 photos per page layout
+      for (let i = 0; i < photoData.length; i++) {
+        if (i > 0 && i % 2 === 0) {
+          pdf.addPage();
+          yPosition = 60;
+          
+          // Add page header for subsequent photo pages
+          pdf.setFontSize(14);
+          pdf.setTextColor(colors.navy.r, colors.navy.g, colors.navy.b);
+          pdf.setFont('Helvetica', 'bold');
+          pdf.text('Photos (continued)', margin, yPosition);
+          pdf.setLineWidth(0.5);
+          pdf.setDrawColor(colors.navy.r, colors.navy.g, colors.navy.b);
+          pdf.line(margin, yPosition + 5, margin + contentWidth, yPosition + 5);
+          yPosition += 30;
+        }
+        
+        const photo = photoData[i];
+        const photoIndex = i;
+        
+        // Calculate photo dimensions - max width or max height of 3.5"
+        const maxWidth = contentWidth;
+        const maxHeight = 3.5 * 72; // 3.5 inches in points
+        let photoWidth = maxWidth;
+        let photoHeight = maxHeight;
+        
+        // Maintain aspect ratio (assuming 4:3 for calculation)
+        const aspectRatio = 4 / 3;
+        if (photoWidth / photoHeight > aspectRatio) {
+          photoWidth = photoHeight * aspectRatio;
+        } else {
+          photoHeight = photoWidth / aspectRatio;
+        }
+        
+        // Center the photo horizontally
+        const xPos = margin + (contentWidth - photoWidth) / 2;
+        
+        try {
+          if (photo.src) {
+            pdf.addImage(photo.src, 'JPEG', xPos, yPosition, photoWidth, photoHeight);
+          } else {
+            throw new Error('Photo source not found');
+          }
+        } catch (error) {
+          console.error(`Error adding photo ${photoIndex + 1} to PDF:`, error);
+          pdf.setFontSize(10);
+          pdf.setTextColor(colors.textGray.r, colors.textGray.g, colors.textGray.b);
+          pdf.text(`[Photo ${photoIndex + 1} failed to load]`, xPos, yPosition + photoHeight / 2);
+        }
+        
+        yPosition += photoHeight;
+        
+        // Photo caption
+        pdf.setFillColor(colors.navy.r, colors.navy.g, colors.navy.b);
+        pdf.rect(margin, yPosition, contentWidth, 20, 'F');
+        pdf.setFontSize(12);
+        pdf.setTextColor(255, 255, 255);
+        const label = photo.description 
+          ? `Photo ${photoIndex + 1}: ${photo.description}`
+          : `Photo ${photoIndex + 1}`;
+        pdf.text(label, margin + 10, yPosition + 14, { align: 'left' });
+        
+        yPosition += 20;
+        
+        // Photo notes
+        if (photo.notes) {
+          pdf.setFontSize(11);
+          pdf.setTextColor(colors.textGray.r, colors.textGray.g, colors.textGray.b);
+          const notesLines = pdf.splitTextToSize(photo.notes, contentWidth - 20);
+          for (let lineIndex = 0; lineIndex < notesLines.length; lineIndex++) {
+            pdf.text(notesLines[lineIndex], margin + 10, yPosition + 15 + (lineIndex * 12));
+          }
+          yPosition += 15 + (notesLines.length * 12);
+        }
+        
+        // Add spacing between photos
+        yPosition += 30;
+        
+        // Check if we need a new page for the next photo
+        if (i < photoData.length - 1 && (i + 1) % 2 !== 0 && yPosition > pageHeight - 300) {
+          pdf.addPage();
+          yPosition = 60;
+        }
+      }
+    } else {
+      // 6 photos per page layout (existing code)
     const photoWidth = 226; // Increased by 15% from 207pt
     const photoHeight = 170; // 4:3 aspect ratio, increased by 15% from 155pt
     const photosPerPage = 6; // 2 columns × 3 rows
@@ -351,6 +438,7 @@ export const generatePDF = async (visit: Visit): Promise<void> => {
           pdf.text(`[Photo ${photoIndex + 1} failed to load]`, xPos, yPos + photoHeight / 2);
         }
       }
+    }
     }
   }
 

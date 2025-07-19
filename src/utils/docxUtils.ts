@@ -3,7 +3,7 @@ import { saveAs } from 'file-saver';
 import { Visit } from '../types';
 import { photoDB } from './indexedDB';
 
-export const generateDOCX = async (visit: Visit): Promise<void> => {
+export const generateDOCX = async (visit: Visit, photosPerPage: 2 | 6 = 6): Promise<void> => {
   try {
     // Load photo sources from IndexedDB
     const photoData = await photoDB.getPhotosByVisitId(visit.id);
@@ -403,6 +403,190 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
     // Photos Section
     if (photoData && photoData.length > 0) {
       // Add page break and photos header
+      if (photosPerPage === 2) {
+        // 2 photos per page layout
+        for (let i = 0; i < photoData.length; i++) {
+          const photo = photoData[i];
+          const photoIndex = i;
+          
+          // Add page break and header for each photo page
+          documentChildren.push(
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: i === 0 ? 'Site Photos' : 'Site Photos (continued)',
+                  bold: true,
+                  size: 28, // 14pt
+                  color: colors.navy
+                })
+              ],
+              spacing: { after: 600 },
+              pageBreakBefore: true,
+              border: {
+                bottom: {
+                  color: colors.navy,
+                  space: 1,
+                  style: BorderStyle.SINGLE,
+                  size: 6,
+                }
+              }
+            })
+          );
+          
+          // Create single-column table with 8 rows for each photo
+          const tableRows = [];
+          
+          // Row 1: Photo
+          try {
+            if (!photo.src) {
+              throw new Error('Photo source not found');
+            }
+            const base64Data = photo.src.split(',')[1];
+            const binaryString = atob(base64Data);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let j = 0; j < binaryString.length; j++) {
+              bytes[j] = binaryString.charCodeAt(j);
+            }
+            
+            // Calculate photo dimensions - max width or max height of 3.5"
+            const maxWidth = 7.5 * 72 * 20; // 7.5" in twips (page width minus margins)
+            const maxHeight = 3.5 * 72 * 20; // 3.5" in twips
+            let photoWidth = maxWidth;
+            let photoHeight = maxHeight;
+            
+            // Maintain aspect ratio (assuming 4:3 for calculation)
+            const aspectRatio = 4 / 3;
+            if (photoWidth / photoHeight > aspectRatio) {
+              photoWidth = photoHeight * aspectRatio;
+            } else {
+              photoHeight = photoWidth / aspectRatio;
+            }
+            
+            tableRows.push(
+              new TableRow({
+                children: [
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new ImageRun({
+                            data: bytes,
+                            transformation: {
+                              width: Math.round(photoWidth / 20), // Convert twips to points
+                              height: Math.round(photoHeight / 20) // Convert twips to points
+                            }
+                          })
+                        ],
+                        alignment: AlignmentType.CENTER
+                      })
+                    ],
+                    margins: { top: 200, bottom: 200, left: 200, right: 200 },
+                    width: { size: 100, type: 'pct' }
+                  })
+                ]
+              })
+            );
+          } catch (error) {
+            tableRows.push(
+              new TableRow({
+                children: [
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: `[Photo ${photoIndex + 1} failed to load]`,
+                            size: 20,
+                            color: colors.textGray
+                          })
+                        ],
+                        alignment: AlignmentType.CENTER
+                      })
+                    ],
+                    margins: { top: 200, bottom: 200, left: 200, right: 200 },
+                    width: { size: 100, type: 'pct' }
+                  })
+                ]
+              })
+            );
+          }
+          
+          // Row 2: Photo Label with navy background
+          const label = photo.description 
+            ? `Photo ${photoIndex + 1}: ${photo.description}`
+            : `Photo ${photoIndex + 1}`;
+          
+          tableRows.push(
+            new TableRow({
+              children: [
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: label,
+                          color: 'FFFFFF',
+                          size: 24,
+                          bold: true
+                        })
+                      ],
+                      alignment: AlignmentType.CENTER
+                    })
+                  ],
+                  shading: { 
+                    type: ShadingType.SOLID, 
+                    color: colors.navy, 
+                    fill: colors.navy 
+                  },
+                  margins: { top: 200, bottom: 200, left: 200, right: 200 },
+                  width: { size: 100, type: 'pct' }
+                })
+              ]
+            })
+          );
+          
+          // Row 3: Notes
+          tableRows.push(
+            new TableRow({
+              children: [
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: photo.notes || '',
+                          size: 22, // 11pt
+                          color: colors.textGray
+                        })
+                      ],
+                      alignment: AlignmentType.LEFT
+                    })
+                  ],
+                  margins: { top: 200, bottom: 400, left: 200, right: 200 },
+                  width: { size: 100, type: 'pct' }
+                })
+              ]
+            })
+          );
+          
+          // Add the table to document
+          documentChildren.push(
+            new Table({
+              width: { size: 100, type: 'pct' },
+              rows: tableRows,
+              borders: {
+                top: { style: BorderStyle.NONE },
+                bottom: { style: BorderStyle.NONE },
+                left: { style: BorderStyle.NONE },
+                right: { style: BorderStyle.NONE },
+                insideHorizontal: { style: BorderStyle.NONE },
+                insideVertical: { style: BorderStyle.NONE },
+              }
+            })
+          );
+        }
+      } else {
+        // 6 photos per page layout (existing code)
       documentChildren.push(
         new Paragraph({
           children: [
@@ -770,6 +954,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
             }
           })
         );
+      }
       }
     }
 
