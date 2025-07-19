@@ -451,19 +451,22 @@ export const generateDOCX = async (visit: Visit, photosPerPage: 2 | 6 = 6): Prom
                 bytes[j] = binaryString.charCodeAt(j);
               }
 
-              // Calculate photo dimensions - max width or max height of 3.5"
-              const maxWidth = 7.5 * 72 * 20; // 7.5" in twips
-              const maxHeight = 3.5 * 72 * 20; // 3.5" in twips
-              let photoWidth = maxWidth;
-              let photoHeight = maxHeight;
+             // Calculate photo dimensions - max 6.5" wide or 3.5" tall
+             const maxWidthInches = 6.5; // 6.5 inches
+             const maxHeightInches = 3.5; // 3.5 inches
+             const maxWidth = maxWidthInches * 72; // Convert to points (1 inch = 72 points)
+             const maxHeight = maxHeightInches * 72; // Convert to points
 
-              // Maintain aspect ratio (assuming 4:3 for calculation)
-              const aspectRatio = 4 / 3;
-              if (photoWidth / photoHeight > aspectRatio) {
-                photoWidth = photoHeight * aspectRatio;
-              } else {
-                photoHeight = photoWidth / aspectRatio;
-              }
+             // Get actual image aspect ratio (assuming photo1.width and photo1.height exist)
+             const aspectRatio = photo1.width && photo1.height ? photo1.width / photo1.height : 4 / 3; // Fallback to 4:3 if dimensions unavailable
+             let photoWidth = maxWidth; // Start with max width
+             let photoHeight = photoWidth / aspectRatio; // Calculate height based on aspect ratio
+
+             // If height exceeds maxHeight, scale down to fit maxHeight
+             if (photoHeight > maxHeight) {
+               photoHeight = maxHeight;
+               photoWidth = photoHeight * aspectRatio;
+             }
 
               tableRows.push(
                 new TableRow({
@@ -475,8 +478,8 @@ export const generateDOCX = async (visit: Visit, photosPerPage: 2 | 6 = 6): Prom
                             new ImageRun({
                               data: bytes,
                               transformation: {
-                                width: Math.round(photoWidth / 20), // Convert twips to points
-                                height: Math.round(photoHeight / 20) // Convert twips to points
+                               width: Math.round(photoWidth), // In points
+                               height: Math.round(photoHeight) // In points
                               }
                             })
                           ],
@@ -616,19 +619,22 @@ export const generateDOCX = async (visit: Visit, photosPerPage: 2 | 6 = 6): Prom
                 bytes[j] = binaryString.charCodeAt(j);
               }
 
-              // Calculate photo dimensions - max width or max height of 3.5"
-              const maxWidth = 7.5 * 72 * 20; // 7.5" in twips
-              const maxHeight = 3.5 * 72 * 20; // 3.5" in twips
-              let photoWidth = maxWidth;
-              let photoHeight = maxHeight;
+             // Calculate photo dimensions - max 6.5" wide or 3.5" tall
+             const maxWidthInches = 6.5; // 6.5 inches
+             const maxHeightInches = 3.5; // 3.5 inches
+             const maxWidth = maxWidthInches * 72; // Convert to points
+             const maxHeight = maxHeightInches * 72; // Convert to points
 
-              // Maintain aspect ratio (assuming 4:3 for calculation)
-              const aspectRatio = 4 / 3;
-              if (photoWidth / photoHeight > aspectRatio) {
-                photoWidth = photoHeight * aspectRatio;
-              } else {
-                photoHeight = photoWidth / aspectRatio;
-              }
+             // Get actual image aspect ratio (assuming photo2.width and photo2.height exist)
+             const aspectRatio = photo2.width && photo2.height ? photo2.width / photo2.height : 4 / 3; // Fallback to 4:3
+             let photoWidth = maxWidth; // Start with max width
+             let photoHeight = photoWidth / aspectRatio; // Calculate height
+
+             // If height exceeds maxHeight, scale down to fit maxHeight
+             if (photoHeight > maxHeight) {
+               photoHeight = maxHeight;
+               photoWidth = photoHeight * aspectRatio;
+             }
 
               tableRows.push(
                 new TableRow({
@@ -640,8 +646,8 @@ export const generateDOCX = async (visit: Visit, photosPerPage: 2 | 6 = 6): Prom
                             new ImageRun({
                               data: bytes,
                               transformation: {
-                                width: Math.round(photoWidth / 20), // Convert twips to points
-                                height: Math.round(photoHeight / 20) // Convert twips to points
+                               width: Math.round(photoWidth), // In points
+                               height: Math.round(photoHeight) // In points
                               }
                             })
                           ],
