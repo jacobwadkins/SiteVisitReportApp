@@ -224,7 +224,7 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
       >
         <Camera size={48} className="mx-auto mb-4 text-blue-600 dark:text-blue-400" />
         <p className="text-lg font-medium text-blue-800 dark:text-blue-300 mb-2">
-          📸 Tap to take photo or select from gallery
+          📸 Add photos
         </p>
         <p className="text-sm text-gray-600 dark:text-gray-400">
           {isUploading ? 'Processing images...' : 'Drag and drop images here'}
