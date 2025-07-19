@@ -422,7 +422,7 @@ export const generateDOCX = async (visit: Visit, photosPerPage: 2 | 6 = 6): Prom
                 })
               ],
               spacing: { after: 600 },
-              pageBreakBefore: pageIndex > 0,
+              pageBreakBefore: true,
               border: {
                 bottom: {
                   color: colors.navy,
