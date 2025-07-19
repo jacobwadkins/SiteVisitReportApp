@@ -314,7 +314,10 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
         documentChildren.push(
           new Paragraph({
             children: [
-              new TextRun({ text: cleanLine, size: 22 })
+              new TextRun({ 
+                text: isTabbed ? `• ${cleanLine}` : cleanLine, 
+                size: 22 
+              })
             ],
             spacing: { after: 100 },
             numbering: isTabbed ? undefined : {
