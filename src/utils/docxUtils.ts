@@ -855,7 +855,7 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
                           new Paragraph({
                             children: [
                               new TextRun({
-                                text: `'Site Visit Report' - ${visit.clientName} - ${visit.siteName}`,
+                                text: `Site Visit Report - ${visit.clientName} - ${visit.siteName}`,
                                 size: 16, // 8pt
                                 color: colors.footerGray
                               })
