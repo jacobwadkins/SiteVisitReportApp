@@ -843,45 +843,79 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
           },
         },
         footers: {
-          default: new Footer({
-            children: [
-              new Paragraph({
-                children: [
-                  new TextRun({
-                    text: 'Page ',
-                    size: 16, // 8pt
-                    color: colors.footerGray
-                  }),
-                  new TextRun({
-                    children: [PageNumber.CURRENT],
-                    size: 16,
-                    color: colors.footerGray
-                  }),
-                  new TextRun({
-                    text: ' of ',
-                    size: 16,
-                    color: colors.footerGray
-                  }),
-                  new TextRun({
-                    children: [PageNumber.TOTAL_PAGES],
-                    size: 16,
-                    color: colors.footerGray
-                  }),
-                  new TextRun({
-                    text: '\t\t\t\t\t\t\t\t\t\tHaskell',
-                    size: 16,
-                    color: colors.footerGray
-                  })
-                ],
-                alignment: AlignmentType.LEFT,
-              })
-            ]
-          })
-        },
-        children: documentChildren
-      }]
-    });
-
+    default: new Footer({
+      children: [
+        new Table({
+          width: { size: 100, type: 'pct' },
+          rows: [
+            new TableRow({
+              children: [
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: `'Site Visit Report' - ${visit.clientName} - ${visit.siteName}`,
+                          size: 16, // 8pt
+                          color: colors.footerGray
+                        })
+                      ],
+                      alignment: AlignmentType.LEFT
+                    })
+                  ],
+                  width: { size: 50, type: 'pct' },
+                  margins: { top: 100, bottom: 100, left: 100, right: 100 },
+                  borders: { top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE } }
+                }),
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: 'Page ',
+                          size: 16, // 8pt
+                          color: colors.footerGray
+                        }),
+                        new TextRun({
+                          children: [PageNumber.CURRENT],
+                          size: 16,
+                          color: colors.footerGray
+                        }),
+                        new TextRun({
+                          text: ' of ',
+                          size: 16,
+                          color: colors.footerGray
+                        }),
+                        new TextRun({
+                          children: [PageNumber.TOTAL_PAGES],
+                          size: 16,
+                          color: colors.footerGray
+                        })
+                      ],
+                      alignment: AlignmentType.RIGHT
+                    })
+                  ],
+                  width: { size: 50, type: 'pct' },
+                  margins: { top: 100, bottom: 100, left: 100, right: 100 },
+                  borders: { top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE } }
+                })
+              ]
+            })
+          ],
+          borders: {
+            top: { style: BorderStyle.NONE },
+            bottom: { style: BorderStyle.NONE },
+            left: { style: BorderStyle.NONE },
+            right: { style: BorderStyle.NONE },
+            insideHorizontal: { style: BorderStyle.NONE },
+            insideVertical: { style: BorderStyle.NONE }
+          }
+        })
+      ]
+    })
+  }
+        
+        
     const blob = await Packer.toBlob(doc);
     const safeClientName = visit.clientName.replace(/[^a-zA-Z0-9-_]/g, '');
     const safeSiteName = visit.siteName.replace(/[^a-zA-Z0-9-_]/g, '');
