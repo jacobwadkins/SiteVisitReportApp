@@ -317,13 +317,11 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
               new TextRun({ text: cleanLine, size: 22 })
             ],
             spacing: { after: 100 },
-            numbering: isTabbed ? {
-              reference: 'bullet-numbering',
-              level: 0
-            } : {
+            numbering: isTabbed ? undefined : {
               reference: 'observations-numbering',
               level: 0
-            }
+            },
+            indent: { left: isTabbed ? 1080 : 360 } // 0.75" for bullets, 0.25" for numbers
           })
         );
       });
@@ -365,14 +363,17 @@ export const generateDOCX = async (visit: Visit): Promise<void> => {
         documentChildren.push(
           new Paragraph({
             children: [
-              new TextRun({ text: cleanLine, size: 22 })
+              new TextRun({ 
+                text: isTabbed ? `• ${cleanLine}` : cleanLine, 
+                size: 22 
+              })
             ],
             spacing: { after: 100 },
-            indent: { left: isTabbed ? 600 : 216 },
             numbering: isTabbed ? undefined : {
-              reference: 'observations-numbering',
+              reference: 'recommendations-numbering',
               level: 0
-            }
+            },
+            indent: { left: isTabbed ? 1080 : 360 } // 0.75" for bullets, 0.25" for numbers
           })
         );
       });
