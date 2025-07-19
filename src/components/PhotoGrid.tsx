@@ -196,11 +196,11 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
 
       {/* Photo Grid */}
       {visit.photos.length > 0 && (
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
           {visit.photos.map((photo, index) => (
             <div
               key={photo.id}
-              className="bg-gray-50 dark:bg-gray-700 rounded-xl overflow-hidden shadow-sm"
+              className="bg-gray-50 dark:bg-gray-700 rounded-xl overflow-hidden shadow-sm flex flex-col"
             >
               <div className="bg-blue-600 text-white px-4 py-2 font-bold text-center">
                 Photo {index + 1}
@@ -210,16 +210,16 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
                 <img
                   src={photoSources[photo.id]}
                   alt={photo.description || `Site photo ${index + 1}`}
-                  className="w-full h-64 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                  className="w-full h-48 lg:h-40 xl:h-32 object-cover cursor-pointer hover:opacity-90 transition-opacity"
                   onClick={() => setFullscreenPhotoId(photo.id)}
                 />
               ) : (
-                <div className="w-full h-64 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                <div className="w-full h-48 lg:h-40 xl:h-32 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                   <span className="text-gray-500 dark:text-gray-400">Loading photo...</span>
                 </div>
               )}
               
-              <div className="p-4">
+              <div className="p-4 flex-1 flex flex-col">
                 {editingPhotoId === photo.id ? (
                   <form onSubmit={handleSubmit(savePhoto)} className="space-y-4">
                     <div>
@@ -269,26 +269,26 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
                   </form>
                 ) : (
                   <div>
-                    <div className="mb-4">
+                    <div className="mb-4 flex-1">
                       <p className="font-semibold text-gray-900 dark:text-white">
                         {photo.description || 'No description'}
                       </p>
-                      <p className="text-gray-600 dark:text-gray-300 mt-1">
+                      <p className="text-gray-600 dark:text-gray-300 mt-1 text-sm">
                         {photo.notes || 'No notes'}
                       </p>
                     </div>
                     
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-2 mt-auto">
                       <button
                         onClick={() => startEditing(photo.id, photo)}
-                        className="flex items-center space-x-2 px-3 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors touch-manipulation"
+                        className="flex items-center space-x-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors touch-manipulation text-sm"
                       >
                         <Edit3 size={14} />
                         <span>Edit</span>
                       </button>
                       <button
                         onClick={() => handleDeletePhoto(photo.id)}
-                        className="flex items-center space-x-2 px-3 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors touch-manipulation"
+                        className="flex items-center space-x-1 px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors touch-manipulation text-sm"
                       >
                         <Trash2 size={14} />
                         <span>Delete</span>
