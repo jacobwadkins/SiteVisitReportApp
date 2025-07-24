@@ -46,9 +46,9 @@ export const VisitList: React.FC<VisitListProps> = ({ onVisitSelect }) => {
 
     try {
       if (format === 'pdf') {
-        await generatePDF(visit);
+        await generatePDF(visit, photosPerPage);
       } else {
-        await generateDOCX(visit);
+        await generateDOCX(visit, photosPerPage);
       }
       
       triggerHaptic('heavy');
@@ -118,6 +118,48 @@ export const VisitList: React.FC<VisitListProps> = ({ onVisitSelect }) => {
             </div>
             
             <div className="p-4 space-y-3">
+              {/* Photos Per Page Toggle */}
+              {(() => {
+                const visit = visits.find(v => v.id === showExportModal);
+                return visit && visit.photos.length > 0 ? (
+                  <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Photos per page:
+                      </span>
+                      <div className="flex bg-gray-200 dark:bg-gray-600 rounded-lg p-1">
+                        <button
+                          onClick={() => {
+                            setPhotosPerPage(2);
+                            triggerHaptic('light');
+                          }}
+                          className={`px-3 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
+                            photosPerPage === 2
+                              ? 'bg-blue-600 text-white shadow-sm'
+                              : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
+                          }`}
+                        >
+                          2
+                        </button>
+                        <button
+                          onClick={() => {
+                            setPhotosPerPage(6);
+                            triggerHaptic('light');
+                          }}
+                          className={`px-3 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
+                            photosPerPage === 6
+                              ? 'bg-blue-600 text-white shadow-sm'
+                              : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
+                          }`}
+                        >
+                          6
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : null;
+              })()}
+              
               <button
                 onClick={() => handleExport(showExportModal, 'pdf')}
                 disabled={exportingVisitId === showExportModal}
@@ -151,6 +193,8 @@ export const VisitList: React.FC<VisitListProps> = ({ onVisitSelect }) => {
       )}
 
       {/* Loading overlay when exporting */}
+  const photosPerPage = useStore((state) => state.photosPerPage);
+  const setPhotosPerPage = useStore((state) => state.setPhotosPerPage);
       {exportingVisitId && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/30 backdrop-blur-sm">
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-xl">
