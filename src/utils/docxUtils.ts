@@ -544,7 +544,7 @@ export const generateDOCX = async (visit: Visit, photosPerPage: 2 | 6 = 6): Prom
                       color: colors.navy,
                       fill: colors.navy
                     },
-                    margins: { top: 200, bottom: 200, left: 200, right: 200 },
+                    margins: { top: 100, bottom: 100, left: 200, right: 200 },
                     width: { size: 100, type: 'pct' }
                   })
                 ]
