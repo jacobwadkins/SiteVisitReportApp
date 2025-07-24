@@ -75,6 +75,7 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
   const visit = useStore((state) => state.visits.find((v) => v.id === visitId));
   const updateVisit = useStore((state) => state.updateVisit);
   const photosPerPage = useStore((state) => state.photosPerPage);
+  const setPhotosPerPage = useStore((state) => state.setPhotosPerPage);
   const triggerHaptic = useHapticFeedback();
 
   // Helper functions for display numbering
@@ -483,6 +484,45 @@ const VisitDetail = forwardRef<VisitDetailRef, VisitDetailProps>(({ visitId }, r
             </div>
             
             <div className="p-4 space-y-3">
+              {/* Photos Per Page Toggle */}
+              {visit.photos.length > 0 && (
+                <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Photos per page:
+                    </span>
+                    <div className="flex bg-gray-200 dark:bg-gray-600 rounded-lg p-1">
+                      <button
+                        onClick={() => {
+                          setPhotosPerPage(2);
+                          triggerHaptic('light');
+                        }}
+                        className={`px-3 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
+                          photosPerPage === 2
+                            ? 'bg-blue-600 text-white shadow-sm'
+                            : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
+                        }`}
+                      >
+                        2
+                      </button>
+                      <button
+                        onClick={() => {
+                          setPhotosPerPage(6);
+                          triggerHaptic('light');
+                        }}
+                        className={`px-3 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
+                          photosPerPage === 6
+                            ? 'bg-blue-600 text-white shadow-sm'
+                            : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
+                        }`}
+                      >
+                        6
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               <button
                 onClick={() => handleExport('pdf')}
                 disabled={isExporting}

@@ -174,47 +174,6 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ visitId }) => {
       )}
 
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-5">
-      {/* Photos Per Page Toggle */}
-      {visit.photos.length > 0 && (
-        <div className="mb-6 flex justify-end">
-          <div className="flex items-center space-x-3">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Photos per page:
-            </span>
-            <div className="relative">
-              <div className="flex bg-gray-200 dark:bg-gray-700 rounded-lg p-1">
-                <button
-                  onClick={() => {
-                    setPhotosPerPage(2);
-                    triggerHaptic('light');
-                  }}
-                  className={`px-3 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
-                    photosPerPage === 2
-                      ? 'bg-blue-600 text-white shadow-sm'
-                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
-                  }`}
-                >
-                  2
-                </button>
-                <button
-                  onClick={() => {
-                    setPhotosPerPage(6);
-                    triggerHaptic('light');
-                  }}
-                  className={`px-3 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
-                    photosPerPage === 6
-                      ? 'bg-blue-600 text-white shadow-sm'
-                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
-                  }`}
-                >
-                  6
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Upload Area */}
       <div
         onDrop={handleDrop}
