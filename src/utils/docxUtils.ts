@@ -655,7 +655,7 @@ export const generateDOCX = async (visit: Visit, photosPerPage: 2 | 6 = 6): Prom
                         })
                       ],
                       margins: { top: 200, bottom: 200, left: 200, right: 200 },
-                      width: { size: 100, type: 'pct' }
+                      width: { size: 80, type: 'pct' }
                     })
                   ]
                 })
@@ -737,7 +737,7 @@ export const generateDOCX = async (visit: Visit, photosPerPage: 2 | 6 = 6): Prom
                       })
                     ],
                     margins: { top: 200, bottom: 200, left: 200, right: 200 },
-                    width: { size: 100, type: 'pct' }
+                    width: { size: 80, type: 'pct' }
                   })
                 ]
               })
@@ -750,7 +750,7 @@ export const generateDOCX = async (visit: Visit, photosPerPage: 2 | 6 = 6): Prom
                   new TableCell({
                     children: [new Paragraph({ text: '', spacing: { before: 0, after: 0 } })],
                     margins: { top: 0, bottom: 0, left: 200, right: 200 },
-                    width: { size: 100, type: 'pct' },
+                    width: { size: 80, type: 'pct' },
                     height: { value: 40, rule: 'exact' } // 2pt height
                   })
                 ]
