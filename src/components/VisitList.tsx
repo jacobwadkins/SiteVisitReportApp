@@ -13,6 +13,8 @@ interface VisitListProps {
 export const VisitList: React.FC<VisitListProps> = ({ onVisitSelect }) => {
   const visits = useStore((state) => state.visits);
   const deleteVisit = useStore((state) => state.deleteVisit);
+  const photosPerPage = useStore((state) => state.photosPerPage);
+  const setPhotosPerPage = useStore((state) => state.setPhotosPerPage);
   const triggerHaptic = useHapticFeedback();
   const [exportingVisitId, setExportingVisitId] = React.useState<string | null>(null);
   const [showExportModal, setShowExportModal] = React.useState<string | null>(null);
@@ -193,8 +195,6 @@ export const VisitList: React.FC<VisitListProps> = ({ onVisitSelect }) => {
       )}
 
       {/* Loading overlay when exporting */}
-  const photosPerPage = useStore((state) => state.photosPerPage);
-  const setPhotosPerPage = useStore((state) => state.setPhotosPerPage);
       {exportingVisitId && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/30 backdrop-blur-sm">
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-xl">
